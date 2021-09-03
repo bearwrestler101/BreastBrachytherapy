@@ -1,75 +1,62 @@
-clc; close all;
-%% Constants
-%constants
-bi_thresh = 0.48;
-min_contour_length = 400;
-se_erode = strel('octagon',6);
-se_dilate = strel('octagon',6); %should try octagon
-num_points = 100;
-epsilon = 1;
-z_val = [0; 1; 2]; %seperation distance between slices
-z_int = [0:0.05:2]; %points to evaluate interpolation at
-num_images = [size(image_cell{1},3); size(image_cell{2},3); size(image_cell{3},3)];
+clc; close all; clearvars -except out;
 
-%% Contour Interpolation
+% extracts relevant index/image/pos from raw data
+[index_cell, image_cell, pos_cell] = Prep_pt2pt(out);
 
-%import images, preprocess, find contours, remove poor contours
+%%% THE CODE BELOW IS FOR REMOVING DUPLICATES %%%
+% should be able to remove when scanning procedure is good - likely can be
+% fixed by delaying shutter_fb input from US PC to panda PC
 
-% us_scans = cell(num_images,1);
-% for i = 1:size(num_images,1)
-%     us_scans{i,1} = image_cell(:,:,i);
-% end
-
-us_scans = image_cell{1}(:,:,:);
-
-contours_interp_all = cell(num_images(1,1),1);
-hold on
-for k = 1:size(us_scans, 3)
-%     srma = us_scans{k};
-    seroma_pre = Preprocess(us_scans(:,:,k));
-    [seroma_cont, contours] = Contour(seroma_pre, bi_thresh, se_erode, se_dilate);
-    contours_good = IsContourGood(contours, min_contour_length);
-    
-    %interpolate and save interpolated contours
-    contours_interp = ContourInterpolation2d(contours_good, num_points);
-    contours_interp_all{k} = contours_interp{1};
-end
-hold off
-
-contours_interp_all = contours_interp_all(~cellfun('isempty',contours_interp_all));
-
-%% Shape Interpolation
-
-s_x = cell(num_points, 1);
-s_y = cell(num_points, 1);
-f_x = zeros(length(contours_interp_all),2);
-%rbf 3d interpolation as outlined by https://en.wikipedia.org/wiki/Radial_basis_function_interpolation
-%interpolating x and y values given known z values
-for i = 1:num_points
-    for j = 1:length(contours_interp_all)
-        f_x(j,:) = contours_interp_all{j}(i,:);
+iLog = zeros(size(index_cell,1),1);
+for i = 2:size(pos_cell,1)
+    if round(pos_cell{i-1}(1,1),3) == round(pos_cell{i}(1,1),3)
+        iLog(i,1) = i;
     end
-    phi_mat = make_phi_mat(z_val, epsilon);
-    w = phi_mat\f_x;
-    [s_x{i,1}, s_y{i,1}] = fnc_gen(z_int, z_val, w, epsilon);
 end
-hold on
-%plot interpolated 3d curves
-for i = 1:length(s_x)
-    plot3(z_int, s_x{i,1}, s_y{i,1},'Linewidth', 2)
-end
-%plot interpolated 2d slices
-for k = 1:length(contours_interp_all)
-    cnt_int = contours_interp_all{k};
-    plot3(z_val(k,1)*ones(length(cnt_int),1), cnt_int(:,1), cnt_int(:,2), 'b', 'Linewidth', 3);
+iLog = iLog(all(iLog, 2));
+for i = 1:size(iLog,1)
+    index_cell(iLog(i,1),1) = 0;
+    pos_cell{iLog(i,1),1} = [];
+    image_cell{iLog(i,1),1} = [];
 end
 
-%create vectors 
-s_x_surf = cell2mat(s_x);
-s_y_surf = cell2mat(s_y);
-z_int_surf = repmat(z_int, 1, length(s_x)).';
+%-------%
 
-figure;
+% remove empties
+index_cell = index_cell(all(index_cell, 2));
+pos_cell = pos_cell(~cellfun('isempty',pos_cell));
+image_cell = image_cell(~cellfun('isempty',image_cell));
+
+% returns a matrix of indices reorganized to fit scanning path
+stitch_indices = ImagesForStitch(index_cell, pos_cell);
+
+% stitches images together
+stitchedImages = cell(size(stitch_indices,1)-15,1);
+for i = 16:size(stitch_indices,1)
+    stitchedImages{i-15} = TemplateMatching(i,stitch_indices, image_cell);
+end
+
+% pads stitched images to make same size
+yMax = max(cellfun('size', stitchedImages,1));
+xMax = max(cellfun('size', stitchedImages,2));
+for i = 1:size(stitchedImages)
+    stitchedImages{i} = padarray(stitchedImages{i}, [yMax-size(stitchedImages{i},1)...
+        xMax-size(stitchedImages{i},2)],'post');
+end
+
+% active contouring stitched images - hard coded frames
+startPointFrame = 1;
+midPointFrame = 7;
+endPointFrame = 13;
+contourCell = ActiveContour(startPointFrame, midPointFrame, endPointFrame,stitchedImages, pos_cell);
+
+% 2D contour and 3D shape interpolation
+[triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell);
+
+figure
 hold on
-tri_check = CreateTriangles(num_points, length(z_int));
-trimesh(tri_check, z_int_surf, s_x_surf, s_y_surf);
+%fv = trimesh(triangles, zSurf, xSurf, ySurf);
+
+% stlwrite('seroma.stl', fv.Faces, fv.Vertices);
+
+
