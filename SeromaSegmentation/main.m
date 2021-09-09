@@ -55,8 +55,8 @@ contourCell = ActiveContour(startPointFrame, midPointFrame, endPointFrame,stitch
 
 figure
 hold on
-%fv = trimesh(triangles, zSurf, xSurf, ySurf);
+fv = trimesh(triangles, surfaceCoords(:,3), surfaceCoords(:,1), surfaceCoords(:,2));
 
-% stlwrite('seroma.stl', fv.Faces, fv.Vertices);
+stlwrite('seroma.stl', fv.Faces, fv.Vertices);
 
 

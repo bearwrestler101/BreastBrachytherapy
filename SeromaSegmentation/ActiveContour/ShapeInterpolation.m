@@ -24,7 +24,7 @@ end
 % additional zValues added for interpolation endpoint error prevention
 zValues = zeros(size(contourCellInt,1),1); %z values of slices
 for i = 1:size(zValues,1)
-    zValues(i,1) = pos_cell{i+13,1}(1,1);
+    zValues(i,1) = pos_cell{i+13,1}(1,1); %should be 15 but added two fake contours for interpolation error mitigation
 end
 zValues = rescale(zValues, 0, zValuesRescale);
 zInt = linspace(min(zValues),max(zValues), contourLength); %points to interpolate at
