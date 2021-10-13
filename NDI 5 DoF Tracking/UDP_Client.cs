@@ -116,7 +116,7 @@ public class UDP_Client : MonoBehaviour
 
                 // Bytes mit der UTF8-Kodierung in das Textformat kodieren.
                 //double positions = BitConverter.ToDouble(data, 8);
-
+                print(data.Length);
                 double[] positions = new double[data.Length / 8];
                 for (int i = 0; i < positions.Length; i++)
                 {
@@ -124,7 +124,7 @@ public class UDP_Client : MonoBehaviour
                 }
 
                 // Den abgerufenen Text anzeigen.
-                print(">>\n" + positions[0] + "\n" + positions[1] + "\n" + positions[2]);
+                print(">>\n" + positions[0] + "\n" + positions[1] + "\n" + positions[2] + "\n" + positions[3] + "\n" + positions[4] + "\n" + positions[5] + "\n" + positions[6]);
 
             }
             catch (Exception err)
