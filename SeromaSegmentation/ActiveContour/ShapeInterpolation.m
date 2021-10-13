@@ -1,11 +1,14 @@
 function [triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell)
 
+%need to figure out best epislon and rbf function
+%need to figure out most accurate inter-slice distance
+
 
 %% Constants
 %constants
 num_points = 100;
 epsilon = 0.2; %%%EDIT TO IMPROVE FIT%%%
-zValuesRescale = 60;
+zValuesRescale = 60; %60 is probably wrong, need some sort of calibration
 contourLength = 80;
 
 %% Contour Interpolation

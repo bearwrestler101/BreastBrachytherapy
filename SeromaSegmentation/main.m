@@ -5,7 +5,7 @@ clc; close all; clearvars -except out;
 
 %%% THE CODE BELOW IS FOR REMOVING DUPLICATES %%%
 % should be able to remove when scanning procedure is good - likely can be
-% fixed by delaying shutter_fb input from US PC to panda PC
+% fixed by delaying shutter outptu from panda PC to US PC
 
 iLog = zeros(size(index_cell,1),1);
 for i = 2:size(pos_cell,1)

@@ -1,5 +1,11 @@
 function canvas = TemplateMatching(frame, stitch_indices, image_cell)
 
+%need to add images that have been cut out from center line even if it
+%doesn't have all three images for stitching
+
+%could make it more automatic by template matching multiple images for one
+%alignment and seeing which fits best
+
 close all; 
 % 1->2 -8
 % 2->3 -7

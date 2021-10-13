@@ -2,7 +2,7 @@ function contourCell = ActiveContour(startPointFrame, midPointFrame, endPointFra
 
 close all; clc;
 
-% will eventually turn into a function that will receive stitchedimages
+
 
 % preprocessing factors
 bithresh = 0.25;
