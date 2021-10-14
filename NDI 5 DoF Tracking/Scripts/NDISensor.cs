@@ -22,7 +22,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-public class UDP_Client : MonoBehaviour
+public class NDISensor : MonoBehaviour
 {
 
     // receiving Thread
@@ -35,15 +35,14 @@ public class UDP_Client : MonoBehaviour
     // public string IP = "127.0.0.1"; default local
     public int port; // define > init
 
-    // infos
-    public string lastReceivedUDPPacket = "";
-    public string allReceivedUDPPackets = ""; // clean up this from time to time!
-
-
+    public GameObject NeedleTip;
+    public Vector3 NeedleTipPos = new Vector3(0, 0, 0);
+    Vector3 dataPosition;
+    
     // start from shell
     private static void Main()
     {
-        UDP_Client receiveObj = new UDP_Client();
+        NDISensor receiveObj = new NDISensor();
         receiveObj.init();
 
         string text = "";
@@ -59,26 +58,9 @@ public class UDP_Client : MonoBehaviour
 
         init();
     }
-
-    // OnGUI
-    void OnGUI()
-    {
-        Rect rectObj = new Rect(40, 10, 200, 400);
-        GUIStyle style = new GUIStyle();
-        style.alignment = TextAnchor.UpperLeft;
-        GUI.Box(rectObj, "# UDP_Client\n127.0.0.1 " + port + " #\n"
-                    + "shell> nc -u 127.0.0.1 : " + port + " \n"
-                    + "\nLast Packet: \n" + lastReceivedUDPPacket
-                    + "\n\nAll Messages: \n" + allReceivedUDPPackets
-                , style);
-    }
-
     // init
     private void init()
     {
-        // Endpunkt definieren, von dem die Nachrichten gesendet werden.
-        print("UDP_Client.init()");
-
         // define port
         port = 1501;
 
@@ -86,17 +68,10 @@ public class UDP_Client : MonoBehaviour
         print("Sending to 127.0.0.1 : " + port);
         print("Test-Sending to this Port: nc -u 127.0.0.1  " + port + "");
 
-
-        // ----------------------------
-        // Abhören
-        // ----------------------------
-        // Lokalen Endpunkt definieren (wo Nachrichten empfangen werden).
-        // Einen neuen Thread für den Empfang eingehender Nachrichten erstellen.
         receiveThread = new Thread(
             new ThreadStart(ReceiveData));
         receiveThread.IsBackground = true;
         receiveThread.Start();
-
     }
 
     // receive thread
@@ -112,20 +87,17 @@ public class UDP_Client : MonoBehaviour
                 // Bytes empfangen.
                 IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 1500);
                 byte[] data = client.Receive(ref anyIP);
-                //24 bytes in data
 
-                // Bytes mit der UTF8-Kodierung in das Textformat kodieren.
-                //double positions = BitConverter.ToDouble(data, 8);
                 print(data.Length);
-                double[] positions = new double[data.Length / 8];
-                for (int i = 0; i < positions.Length; i++)
+                double[] ddata = new double[data.Length / 8];
+                for (int i = 0; i < ddata.Length; i++)
                 {
-                    positions[i] = BitConverter.ToDouble(data, i * 8);
+                    ddata[i] = BitConverter.ToDouble(data, i * 8);
                 }
 
-                // Den abgerufenen Text anzeigen.
-                print(">>\n" + positions[0] + "\n" + positions[1] + "\n" + positions[2] + "\n" + positions[3] + "\n" + positions[4] + "\n" + positions[5] + "\n" + positions[6]);
-
+                print(">>\n" + ddata[0] + "\n" + ddata[1] + "\n" + ddata[2] + "\n" + ddata[3] + "\n" + ddata[4] + "\n" + ddata[5] + "\n" + ddata[6]);
+                dataPosition = new Vector3((float)ddata[0], (float)ddata[1], (float)ddata[2]);
+                 
             }
             catch (Exception err)
             {
@@ -133,12 +105,8 @@ public class UDP_Client : MonoBehaviour
             }
         }
     }
-
-    // getLatestUDPPacket
-    // cleans up the rest
-    public string getLatestUDPPacket()
+    public void Update()
     {
-        allReceivedUDPPackets = "";
-        return lastReceivedUDPPacket;
+        transform.NeedleTipPos = dataPosition;
     }
 }
