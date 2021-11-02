@@ -1,8 +1,11 @@
-function contourCell = ActiveContour(startPointFrame, midPointFrame, endPointFrame, stitchedImages, pos_cell)
+% function contourCell = ActiveContour(startPointFrame, midPointFrame, endPointFrame, stitchedImages, pos_cell)
 
 close all; clc;
 
-
+%
+%A = [0 1 0; 1 -4 1; 0 1 0];
+%imshow(conv2(A, tempImage))
+%
 
 % preprocessing factors
 bithresh = 0.25;
@@ -10,9 +13,15 @@ seDilate = strel('disk', 1,0);
 seErode = strel('disk', 2,4);
 
 % active contouring factors
-numIterations = 800;
+numIterations = 600;
 smoothFactor = 5;
 contractionBias = -1.2;
+
+stitchedImagestemp = stitchedImages;
+for i = 1:size(stitchedImages,1)
+    stitchedImages{i,1} = imresize(stitchedImages{i,1}, 0.6);
+end
+
 
 % active contour middle frame
 image = Preprocess(stitchedImages{midPointFrame}, bithresh, seDilate, seErode);
@@ -58,7 +67,7 @@ contourCell{6,1} = contour{1,1};
 for i = midPointFrame-1:-1:startPointFrame+1
     
     % scale down contour and pad with zeros to match bw size
-    bwSmall = imresize(bw, 0.7);
+    bwSmall = imresize(bw, 0.75);
     zh = zeros(size(bw,1)-size(bwSmall,1),size(bwSmall,2));
     bwSmall = vertcat(bwSmall, zh);
     zv = zeros(size(bwSmall,1), size(bw,2)-size(bwSmall, 2));
@@ -99,7 +108,7 @@ bw = midbw;
 % active contouring for frames between middle and last - same process
 for i = midPointFrame+1:1:endPointFrame-1
         
-    bwSmall = imresize(bw, 0.7);
+    bwSmall = imresize(bw, 0.75);
     zh = zeros(size(bw,1)-size(bwSmall,1),size(bwSmall,2));
     bwSmall = vertcat(bwSmall, zh);
     zv = zeros(size(bwSmall,1), size(bw,2)-size(bwSmall, 2));
@@ -119,7 +128,7 @@ for i = midPointFrame+1:1:endPointFrame-1
 
     contour = bwboundaries(bw);
     contourCell{i-1,1} =  contour{1,1};
-    
+
     figure
     imshow(image)
     hold on
@@ -134,4 +143,4 @@ end
 %     plot(contourCell{i}(:,2), -contourCell{i}(:,1))
 % end
 
-end
+% end
