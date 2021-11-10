@@ -1,4 +1,4 @@
-%% Preapare UDP connections 
+%% Prepare UDP connections 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% UDPs for sensor reading %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

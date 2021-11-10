@@ -1,0 +1,3 @@
+run CAPIsample.sln
+run matlab receiver.m file or unity c# code
+-receiver.m does not currently work as the .sln is sending 7 data points
