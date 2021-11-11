@@ -10,7 +10,7 @@ hudps.RemoteIPPort = 1500;
 %hudps.LocalIPPort  = 1501;
 hudps.RemoteIPAddress = '127.0.0.1';
 
-DATA =zeros(3,10);
+DATA =zeros(7,10);
 release(hudpr)
 fprintf('Start to receive ... ');
     for j=1:1:10
