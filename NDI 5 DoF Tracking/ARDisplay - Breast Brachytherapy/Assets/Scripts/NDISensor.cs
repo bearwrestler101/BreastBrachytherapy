@@ -34,7 +34,17 @@ public class NDISensor : MonoBehaviour
     // public
     // public string IP = "127.0.0.1"; default local
     public int port; // define > init
-    
+
+    Vector3 localPosition = new Vector3(0, 0, 0);
+    Quaternion localRotation = new Quaternion(0, 0, 0, 1);
+    Vector3 originPosition = new Vector3(0, 0, 0);
+    Quaternion originRotation = new Quaternion(0, 0, 0, 1);
+
+    public Vector3 currentPosition = new Vector3(0, 0, 0);
+    public Quaternion currentRotation = new Quaternion(0, 0, 0, 1);
+
+    int counter = 1;
+
     // start from shell
     private static void Main()
     {
@@ -54,6 +64,8 @@ public class NDISensor : MonoBehaviour
 
         init();
     }
+
+    
     // init
     private void init()
     {
@@ -75,29 +87,51 @@ public class NDISensor : MonoBehaviour
     {
 
         client = new UdpClient(port);
+
         while (true)
         {
 
             try
             {
+                
                 // Bytes empfangen.
                 IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 1500);
                 byte[] data = client.Receive(ref anyIP);
 
-                print(data.Length);
-                double[] ddata = new double[data.Length / 8];
+                float[] ddata = new float[data.Length / 8];
                 for (int i = 0; i < ddata.Length; i++)
                 {
-                    ddata[i] = BitConverter.ToDouble(data, i * 8);
+                    ddata[i] = (float)BitConverter.ToDouble(data, i * 8);
                 }
 
-                print(">>\n" + ddata[0] + "\n" + ddata[1] + "\n" + ddata[2] + "\n" + ddata[3] + "\n" + ddata[4] + "\n" + ddata[5] + "\n" + ddata[6]);
-                
+                //print(">>\n" + ddata[0] + "\n" + ddata[1] + "\n" + ddata[2] + "\n" + ddata[3] + "\n" + ddata[4] + "\n" + ddata[5] + "\n" + ddata[6]);
+
+                localPosition = new Vector3(ddata[0], ddata[1], ddata[2]);
+                localRotation = new Quaternion(ddata[3], ddata[4], ddata[5], ddata[6]);
             }
             catch (Exception err)
             {
                 print(err.ToString());
             }
+        }
+    }
+    public void Update()
+    {
+        if (localPosition[0] != 0 && localPosition[1] != 0 && localPosition [2] != 0)
+        {
+            if (counter == 1)
+            {
+                originPosition = localPosition;
+                originRotation = localRotation;
+            }
+
+            currentPosition = localPosition - originPosition;
+            currentRotation = localRotation * Quaternion.Inverse(originRotation);
+            
+            transform.localPosition = currentPosition;
+            transform.localRotation = currentRotation;
+
+            counter++;
         }
     }
 }

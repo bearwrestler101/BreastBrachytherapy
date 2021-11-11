@@ -2,15 +2,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% UDPs for sensor reading %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 hudpr = dsp.UDPReceiver;
 hudps = dsp.UDPSender;
 hudpr.LocalIPPort  = 1501;
 
 hudps.RemoteIPPort = 1500;
-hudps.LocalIPPort  = 1501;
+%hudps.LocalIPPort  = 1501;
 hudps.RemoteIPAddress = '127.0.0.1';
-
 
 DATA =zeros(3,10);
 release(hudpr)
