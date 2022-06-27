@@ -1,5 +1,7 @@
 clc; close all; clearvars -except out;
 
+%mostly used with beef_silica_all
+
 % extracts relevant index/image/pos from raw data
 [index_cell, image_cell, pos_cell] = Prep_pt2pt(out);
 
@@ -35,6 +37,8 @@ stitchedImages = cell(size(stitch_indices,1)-15,1);
 for i = 16:size(stitch_indices,1)
     stitchedImages{i-15} = TemplateMatching(i,stitch_indices, image_cell);
 end
+
+%% 
 
 % pads stitched images to make same size
 yMax = max(cellfun('size', stitchedImages,1));
