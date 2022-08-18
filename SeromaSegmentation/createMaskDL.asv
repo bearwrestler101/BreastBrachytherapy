@@ -1,20 +1,17 @@
-imsize = 256;
+imsize = 690;
 
-% for i = 1:length(stitchedImages)
-for i = 1:13
-
+for i = 1:length(stitchedImages)
     img = stitchedImages{i};
     imshow(img)
     h = drawfreehand;
     bw = createMask(h);
-    mask = bw(1:690, 1:690);
-    mask = imresize(mask, [imsize, imsize]);
+    mask = bw(1:imsize, 1:imsize);
     imwrite(mask, "collected_masks/mask_"+i+".png")
 
-    img = imadjust(img(1:690,1:690),[],[],0.4);
-    img = medfilt2(img, [4 4]);
-    img = imresize(img, [imsize, imsize]);
-    imwrite(img,"collected_images/img_"+i+".png")
+    img = imadjust(img(1:imsize,1:imsize),[],[],0.4);
+    img = img(1:imsize,1:imsize);
+    imgMedFilt = medfilt2(img, [4 4]);
+    imwrite(imgMedFilt,"collected_images/img_"+i+".png")
     close all;
 end
 %%
@@ -24,17 +21,17 @@ imgMedFilt = medfilt2(img, [4 4]);
 imwrite(imgMedFilt, "wtf.png")
 
 %%
-imsize = 256; % pay attention to how image sizes are changed
+
 snpNoise = zeros(round(imsize*1), round(imsize*0.3));
-rng('shuffle');
-row = randi([1 size(snpNoise,1)],1,200);
-column = randi([1 size(snpNoise,2)],1,200);
+rng(1, 'twister');
+row = randi([1 size(snpNoise,1)],1,600);
+column = randi([1 size(snpNoise,2)],1,600);
 for i=1:size(row,2)
     snpNoise(row(i),column(i)) = 1;
     
-    if row(i)>3 && row(i) <=size(snpNoise,1)-3 && column(i)>3 && column(i)<=size(snpNoise,2)-3 && rand > 0.6
-        rowExtra = randi([-3 3], [3 1]);
-        columnExtra = randi([-3 3], [3 1]);
+    if row(i)>2 && row(i) <=size(snpNoise,1)-2 && column(i)>2 && column(i)<=size(snpNoise,2)-2 && rand > 0.7
+        rowExtra = randi([-2 2], [3 1]);
+        columnExtra = randi([-2 2], [3 1]);
         for j = 1:size(rowExtra,1)
             snpNoise(row(i)+rowExtra(j),column(i)+columnExtra(j)) = 1;
         end
