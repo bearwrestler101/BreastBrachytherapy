@@ -1,3 +1,14 @@
+%% Collected images - takes in stitchedImages, creates images ready for segmentation
+% Mask: 
+% - draw
+% - crop (hardcoded to capture seroma)
+% - resize
+% Image: 
+% - crop (same as mask)
+% - gamma adjust (brighter)
+% - median filter (get rid of speckle)
+% - resize
+
 imsize = 256;
 
 % for i = 1:length(stitchedImages)
@@ -11,19 +22,15 @@ for i = 1:13
     mask = imresize(mask, [imsize, imsize]);
     imwrite(mask, "collected_masks/mask_"+i+".png")
 
-    img = imadjust(img(1:690,1:690),[],[],0.4);
-    img = medfilt2(img, [4 4]);
+    img = imadjust(img(1:690,1:690),[],[],0.4); %crop and gamma correction
+    img = medfilt2(img, [4 4]); %median filter
     img = imresize(img, [imsize, imsize]);
     imwrite(img,"collected_images/img_"+i+".png")
     close all;
 end
-%%
-img = stitchedImages{2};
-img = imadjust(img(1:imsize,1:imsize),[],[],0.5);
-imgMedFilt = medfilt2(img, [4 4]);
-imwrite(imgMedFilt, "wtf.png")
 
-%%
+
+%% Create SNP Noise - test !do not run!
 imsize = 256; % pay attention to how image sizes are changed
 snpNoise = zeros(round(imsize*1), round(imsize*0.3));
 rng('shuffle');
@@ -42,7 +49,10 @@ for i=1:size(row,2)
 
 
 end
+snpNoise_other = snpNoise;
 snpNoise = imresize(snpNoise,[imsize, imsize]);
+
+%mat2gray fixes max/min of snpNoise for conversion to uint8
 snpNoise = uint8(255 * mat2gray(snpNoise,[0 1]));
 snpNoise = imgaussfilt(snpNoise,1);
 imshow(snpNoise);

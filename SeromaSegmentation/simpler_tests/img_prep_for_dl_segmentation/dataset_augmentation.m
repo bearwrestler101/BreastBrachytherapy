@@ -13,7 +13,7 @@ for i = 1:length(origImg)
     resizedImg{i}=imresize(origImg{i}, [imsize imsize]);
 end
 
-%%
+%% Adding speckle
 
 for k = 1:size(resizedImg, 2)
     if isa(resizedImg{k}, 'uint8')
@@ -38,8 +38,12 @@ for k = 1:size(resizedImg, 2)
             end
         end
         snpNoise = imresize(snpNoise,[imsize, imsize]);
+
+        %mat2gray() fixes max/min of snpNoise for conversion to uint8
         snpNoise = uint8(255 * mat2gray(snpNoise,[0 1]));
-        snpNoise = imgaussfilt(snpNoise,1);
+        snpNoise = imgaussfilt(snpNoise,1); %gaussian filter
+        
+        % add noise to original image
         resizedImg{k} = imadd(snpNoise, resizedImg{k}(:,:,1));
     end
 end
@@ -72,6 +76,7 @@ end
 dataset = [resizedImg, gammaUp, gammaDown, rot90_gUp, rot90_gDown, rot180_gUp, rot180_gDown, rot270_gUp, rot270_gDown];
 
 %%
+
 [imgs, masks, masks1, masks2] = deal([]);
 
 %find indeces of images and masks in original dataset
