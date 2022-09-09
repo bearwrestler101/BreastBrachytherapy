@@ -11,7 +11,7 @@ end
 for i=1:length(predImg)
     im = predImg{i};
     im = imbinarize(im);
-    S{i} = regionprops(im, 'basic');
+    S{i} = regionprops(im, 'Area', 'Centroid', 'BoundingBox', 'MajorAxisLength','Extent','Solidity');
     CC{i} = bwconncomp(im);
 end
 
@@ -19,7 +19,7 @@ end
 for i = 1:length(predImg)
     [toss,bigBlob] = max(vertcat(S{i}.Area));
     tempCell = struct2cell(S{i});
-    for j = 1:3
+    for j = 1:size(tempCell,1)
         allPreds{j,i} = tempCell{j,bigBlob};
     end
 end
@@ -27,24 +27,49 @@ end
 
 %% Check for good and bad predictions
 
-%might need to move above allPreds
-if bwconncomp(im).NumObjects>1
-    disp("error")
+% [sumCent,meanCent] = deal(zeros(1,2));
+% for i = 1:size(allPreds,2)
+%     sumCent(1,1) = sumCent(1,1)+allPreds{2,i}(1);
+%     sumCent(1,2) = sumCent(1,2)+allPreds{2,i}(2);
+% end
+% 
+% meanCent(1,1) = sumCent(1,1)/size(allPreds,2);
+% meanCent(1,2) = sumCent(1,2)/size(allPreds,2);
+
+
+
+minArea = 1000;
+maxObj = 1;
+for i = 1:size(allPreds,2)
+    if allPreds{1,i} < minArea
+        forbidden_list = i;
+        continue
+    end
+
+    tempCell = struct2cell(S{i});
+    tempImg = imbinarize(predImg{i});
+    if bwconncomp(tempImg).NumObjects > maxObj
+        disp("Multiple Areas Detected")
+
+        santas_list(tempImg,tempCell);
+    end
+
 end
 
-[sum,mean] = deal(zeros(1,2));
-for i = 1:length(allPreds)
-    sum(1,1) = sum(1,1)+allPreds{2,i}(1);
-    sum(1,2) = sum(1,2)+allPreds{2,i}(2);
-end
+sumMAL = sum(vertcat(allPreds{4,:}));
+stdMAL = std(vertcat(allPreds{4,:}));
+meanMAL = sumMAL/size(allPreds,2);
 
-mean(1,1) = sum(1,1)/size(allPreds,2);
-mean(1,2) = sum(1,2)/size(allPreds,2);
+sumSol = sum(vertcat(allPreds{5,:}));
+stdSol = std(vertcat(allPreds{5,:}));
+meanSol = sumSol/size(allPreds,2);
 
-for i = 1:length(allPreds)
-    santas_list(strucS{i})
+sumExt = sum(vertcat(allPreds{6,1}));
+stdExt = std(vertcat(allPreds{6,:}));
+meanExt = sumExt/size(allPreds,2);
 
-end
+if 
+
 % imshow(im)
 % rectangle(imgca, 'Position',S.BoundingBox, 'EdgeColor','r');
 

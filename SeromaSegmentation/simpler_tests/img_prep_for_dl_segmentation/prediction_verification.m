@@ -4,13 +4,12 @@ predImglist = natsortfiles(dir("predictions/*.png"));
 allPreds = cell(3,size(predImglist,1));
 
 for i=1:length(predImglist)
-  predImg{i}=imread("predictions/"+predImglist(i).name);  
+  predImg{i}=imbinarize(imread("predictions/"+predImglist(i).name));  
 end
 
 %regionprops and bwconncomp for each image
 for i=1:length(predImg)
     im = predImg{i};
-    im = imbinarize(im);
     S{i} = regionprops(im, 'Area', 'Centroid', 'BoundingBox', 'MajorAxisLength','Extent','Solidity');
     CC{i} = bwconncomp(im);
 end
@@ -27,35 +26,32 @@ end
 
 %% Check for good and bad predictions
 
-%might need to move above allPreds
 
 
-[sumCent,meanCent] = deal(zeros(1,2));
-for i = 1:size(allPreds,2)
-    sumCent(1,1) = sumCent(1,1)+allPreds{2,i}(1);
-    sumCent(1,2) = sumCent(1,2)+allPreds{2,i}(2);
-end
 
-meanCent(1,1) = sumCent(1,1)/size(allPreds,2);
-meanCent(1,2) = sumCent(1,2)/size(allPreds,2);
 
 minArea = 1000;
 maxObj = 1;
+forbidden_list = [];
 for i = 1:size(allPreds,2)
     if allPreds{1,i} < minArea
-        disp(i)
+        forbidden_list = [forbidden_list i];
         continue
     end
 
     tempCell = struct2cell(S{i});
-    tempImg = imbinarize(predImg{i});
-    if bwconncomp(tempImg).NumObjects > maxObj
+    if bwconncomp(predImg{i}).NumObjects > maxObj
         disp("Multiple Areas Detected")
 
-        santas_list(tempImg,tempCell);
+        predImg{i} = santas_list(predImg{i},tempCell);
+    else
+        predImg{i} = imfill(predImg{i},'holes');
     end
 
 end
+
+
+
 % imshow(im)
 % rectangle(imgca, 'Position',S.BoundingBox, 'EdgeColor','r');
 
