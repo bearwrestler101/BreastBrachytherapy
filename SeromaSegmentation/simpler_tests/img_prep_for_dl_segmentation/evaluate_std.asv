@@ -1,8 +1,7 @@
-function reconstruct_list = evaluate_std(Preddies, forbidden_list, predImg)
+function  = evaluate_std(Preddies, forbidden_list, predImg)
 
-reconstruct_list = [];
 
-MAL = vertcat(Preddies{4,1:end ~=forbidden_list});
+MAL = vertcat(Preddies{4,1:end ~=forbidden_list);
 sumMAL = sum(MAL);
 stdMAL = std(MAL);
 meanMAL = mean(MAL);
@@ -22,6 +21,7 @@ for i = 1:size(Preddies,2)
     if ismember(i, forbidden_list)
         continue
     end
+    evaluate_std(Preddies)
     %MajorAxisLength
     if (Preddies{4,i}>meanMAL+stdMAL || Preddies{4,i}<meanMAL-stdMAL)
 
@@ -35,22 +35,16 @@ for i = 1:size(Preddies,2)
                 disp('Trying to fix')
                 se = strel('disk',15);
                 predImg{i} = imopen(predImg{i}, se);
-                tempRP = regionprops(predImg{i}, 'Area', 'Centroid', 'BoundingBox', 'MajorAxisLength','Extent','Solidity');
-                [toss,bigBlob] = max(vertcat(tempRP.Area));
-                tempRP = struct2cell(tempRP);
-                tempRP = tempRP(:,bigBlob);
+                tempRP = struct2cell(regionprops(predImg{i}, 'Area', 'Centroid', 'BoundingBox', 'MajorAxisLength','Extent','Solidity'));
                 disp(tempRP)
-
-                if (tempRP{4}>meanMAL+stdMAL || tempRP{4}<meanMAL-stdMAL) && (tempRP{5}>meanSol+stdSol || tempRP{5}<meanSol-stdSol) && (tempRP{6}>meanExt+stdExt || tempRP{6}<meanExt-stdExt)
-                    disp('damn that did not work')
-                    reconstruct_list = [reconstruct_list i];
-                end
+                if tempRP{4}
             end
         end
     end
 
 
 end
+
 
 % [sumCent,meanCent] = deal(zeros(1,2));
 % for i = 1:size(allPreds,2)

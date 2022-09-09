@@ -27,9 +27,6 @@ end
 %% Check for good and bad predictions
 
 
-
-
-
 minArea = 1000;
 maxObj = 1;
 forbidden_list = [];
@@ -50,7 +47,7 @@ for i = 1:size(allPreds,2)
 
 end
 
-
+reconstruct_list = evaluate_std(allPreds, forbidden_list, predImg);
 
 % imshow(im)
 % rectangle(imgca, 'Position',S.BoundingBox, 'EdgeColor','r');
