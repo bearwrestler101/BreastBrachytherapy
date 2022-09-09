@@ -11,7 +11,7 @@ end
 for i=1:length(predImg)
     im = predImg{i};
     im = imbinarize(im);
-    S{i} = regionprops(im, 'Area', 'Centroid', 'BoundingBox', 'MajorAxisLength','Extent','Solidity');
+    S{i} = regionprops(im, 'basic');
     CC{i} = bwconncomp(im);
 end
 
@@ -19,7 +19,7 @@ end
 for i = 1:length(predImg)
     [toss,bigBlob] = max(vertcat(S{i}.Area));
     tempCell = struct2cell(S{i});
-    for j = 1:size(tempCell,1)
+    for j = 1:3
         allPreds{j,i} = tempCell{j,bigBlob};
     end
 end
@@ -28,32 +28,21 @@ end
 %% Check for good and bad predictions
 
 %might need to move above allPreds
-
-
-[sumCent,meanCent] = deal(zeros(1,2));
-for i = 1:size(allPreds,2)
-    sumCent(1,1) = sumCent(1,1)+allPreds{2,i}(1);
-    sumCent(1,2) = sumCent(1,2)+allPreds{2,i}(2);
+if bwconncomp(im).NumObjects>1
+    disp("error")
 end
 
-meanCent(1,1) = sumCent(1,1)/size(allPreds,2);
-meanCent(1,2) = sumCent(1,2)/size(allPreds,2);
+[sum,mean] = deal(zeros(1,2));
+for i = 1:length(allPreds)
+    sum(1,1) = sum(1,1)+allPreds{2,i}(1);
+    sum(1,2) = sum(1,2)+allPreds{2,i}(2);
+end
 
-minArea = 1000;
-maxObj = 1;
-for i = 1:size(allPreds,2)
-    if allPreds{1,i} < minArea
-        disp(i)
-        continue
-    end
+mean(1,1) = sum(1,1)/size(allPreds,2);
+mean(1,2) = sum(1,2)/size(allPreds,2);
 
-    tempCell = struct2cell(S{i});
-    tempImg = imbinarize(predImg{i});
-    if bwconncomp(tempImg).NumObjects > maxObj
-        disp("Multiple Areas Detected")
-
-        santas_list(tempImg,tempCell);
-    end
+for i = 1:length(allPreds)
+    santas_list(strucS{i})
 
 end
 % imshow(im)
