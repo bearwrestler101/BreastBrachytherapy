@@ -1,4 +1,4 @@
-close all;
+close all; clear;
 predImglist = natsortfiles(dir("predictions/*.png"));
 
 predImg = cell(size(predImglist, 1), 1);
@@ -51,11 +51,14 @@ for i=1:size(allPreds,2)
 end
 [S, allPreds] = create_allPreds(predImg);
 
-%find centroid mean
+%[~, predImg] = evaluate_std(allPreds, forbidden_list, predImg, 'Centroid');
 
-[~, predImg] = evaluate_std(allPreds, forbidden_list, predImg, 'Centroid');
+[forbidden_list, predImg] = evaluate_std(allPreds, forbidden_list, predImg, 'BoxOverlap');
 
-[reconstruct_list, predImg] = evaluate_std(allPreds, forbidden_list, predImg, 'Other');
+[forbidden_list, predImg] = evaluate_std(allPreds, forbidden_list, predImg, 'Other');
+[S, allPreds] = create_allPreds(predImg);
+forbidden_list = sort(unique(forbidden_list));
+
 
 % imshow(im)
 % rectangle(imgca, 'Position',S.BoundingBox, 'EdgeColor','r');

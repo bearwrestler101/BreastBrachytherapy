@@ -13,8 +13,8 @@ function binImg = fill_areas(binImg, pred)
         %fill possible holes in seroma
         binImg = imfill(binImg, 'holes');
     end
-    figure
-    imshow(binImg)
+    %figure
+    %imshow(binImg)
     disp(bwconncomp(binImg).NumObjects)
 
 
