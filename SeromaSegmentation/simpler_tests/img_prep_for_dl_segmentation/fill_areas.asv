@@ -1,9 +1,9 @@
-function binImg = santas_list(binImg, pred)
+function binImg = fill_areas(binImg, pred)
     [toss,bigBlob] = max(vertcat(pred{1,:}));
     
     for j = 1:size(pred,2)
         if j == bigBlob
-            disp("main area skipped");
+            disp("Skipping main area");
             continue
         end
         %coordinates have to be reversed because regionprops() gives image coordinates

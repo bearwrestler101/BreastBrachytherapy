@@ -1,53 +1,61 @@
+close all;
 predImglist = natsortfiles(dir("predictions/*.png"));
 
-[predImg,S,CC]=deal(cell(size(predImglist, 1), 1));
-allPreds = cell(3,size(predImglist,1));
+predImg = cell(size(predImglist, 1), 1);
 
 for i=1:length(predImglist)
   predImg{i}=imbinarize(imread("predictions/"+predImglist(i).name));  
 end
 
-%regionprops and bwconncomp for each image
-for i=1:length(predImg)
-    im = predImg{i};
-    S{i} = regionprops(im, 'Area', 'Centroid', 'BoundingBox', 'MajorAxisLength','Extent','Solidity');
-    CC{i} = bwconncomp(im);
-end
-
-%copy regionprops stats for biggest areas from each image to a new cell
-for i = 1:length(predImg)
-    [toss,bigBlob] = max(vertcat(S{i}.Area));
-    tempCell = struct2cell(S{i});
-    for j = 1:size(tempCell,1)
-        allPreds{j,i} = tempCell{j,bigBlob};
-    end
-end
+[S, allPreds] = create_allPreds(predImg);
 
 
-%% Check for good and bad predictions
-
+% Check for good and bad predictions
 
 minArea = 1000;
 maxObj = 1;
 forbidden_list = [];
+
+
+
 for i = 1:size(allPreds,2)
+
+    %if detected seroma too small, add image to forbidden_list
     if allPreds{1,i} < minArea
         forbidden_list = [forbidden_list i];
         continue
     end
 
+end
+
+
+for i=1:size(allPreds,2)
+    if ismember(i, forbidden_list)
+        disp("Skipping:")
+        disp(i)
+        continue
+    end
+    
+    %load all areas in image into tempCell
     tempCell = struct2cell(S{i});
+
+    %if multiple areas detected - try to fill them, 
+    %if only one area detected - simply fill background holes within seroma
     if bwconncomp(predImg{i}).NumObjects > maxObj
         disp("Multiple Areas Detected")
-
-        predImg{i} = santas_list(predImg{i},tempCell);
+        predImg{i} = fill_areas(predImg{i},tempCell);
     else
         predImg{i} = imfill(predImg{i},'holes');
     end
 
 end
+[S, allPreds] = create_allPreds(predImg);
 
-reconstruct_list = evaluate_std(allPreds, forbidden_list, predImg);
+%find centroid mean
+
+[~, predImg] = evaluate_std(allPreds, forbidden_list, predImg, 'Centroid');
+
+[reconstruct_list, predImg] = evaluate_std(allPreds, forbidden_list, predImg, 'Other');
 
 % imshow(im)
 % rectangle(imgca, 'Position',S.BoundingBox, 'EdgeColor','r');
