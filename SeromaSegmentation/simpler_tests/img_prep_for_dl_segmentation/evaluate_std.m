@@ -1,4 +1,4 @@
-function [forbidden_list, predImg] = evaluate_std(Preddies, forbidden_list, predImg, checkType)
+function [forbidden_list, predImg] = evaluate_std(Preddies, forbidden_list, predImg, maxObj, checkType)
 
 
 switch checkType
@@ -65,21 +65,31 @@ switch checkType
                 sprintf("This one is bad: %d", i);
                 disp('Trying to fix')
                 se = strel('disk',15);
-                predImg{i} = imopen(predImg{i}, se);
-                tempRP = regionprops(predImg{i}, 'Area', 'Centroid', 'BoundingBox', 'MajorAxisLength','Extent','Solidity');
-                [toss,bigBlob] = max(vertcat(tempRP.Area));
-                tempRP = struct2cell(tempRP);
-                tempRP = tempRP(:,bigBlob);
-                disp(tempRP)
+                img = imopen(predImg{i}, se);
 
+                tempRP = regionprops(img, 'Area', 'Centroid', 'BoundingBox', 'MajorAxisLength','Extent','Solidity');
+                [~,bigBlob] = max(vertcat(tempRP.Area));
+                tempRP = struct2cell(tempRP);
+
+                %if multiple areas detected - try to fill them,
+                %if only one area detected - simply fill background holes within seroma
+                if bwconncomp(img).NumObjects > maxObj
+                    disp("Multiple areas detected in fixed image")
+                    img = fill_areas(img,tempRP);
+                    img = imfill(img,'holes');
+                else
+                    img = imfill(img,'holes');
+                end
+                
+                tempRP = tempRP(:,bigBlob);
                 if (tempRP{4}>meanMAL+stdMAL || tempRP{4}<meanMAL-stdMAL) &&...
                         (tempRP{5}>meanSol+stdSol || tempRP{5}<meanSol-stdSol) &&...
                         (tempRP{6}>meanExt+stdExt || tempRP{6}<meanExt-stdExt)
-                    disp('Damn that did not work')
+                    disp('Did not work')
                     forbidden_list = [forbidden_list i];
                 else
-
-                    disp("Success!")
+                    predImg{i} = img;
+                    disp("Segmentation fixed!")
                 end
             end
         end

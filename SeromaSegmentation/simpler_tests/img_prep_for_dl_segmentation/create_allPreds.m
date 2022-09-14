@@ -11,7 +11,7 @@ end
 
 %copy regionprops stats for biggest areas from each image to a new cell
 for i = 1:length(predImg)
-    [toss,bigBlob] = max(vertcat(S{i}.Area));
+    [~,bigBlob] = max(vertcat(S{i}.Area));
     tempCell = struct2cell(S{i});
     for j = 1:size(tempCell,1)
         allPreds{j,i} = tempCell{j,bigBlob};
