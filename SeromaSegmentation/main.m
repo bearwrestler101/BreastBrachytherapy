@@ -1,5 +1,7 @@
 clc; close all; clearvars -except out;
 
+%testing tags
+
 %load beef_silica_all and add ActiveContour and ImageStitch folders to path
 
 % extracts relevant index/image/pos from raw data
