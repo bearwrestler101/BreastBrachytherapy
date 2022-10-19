@@ -2,6 +2,8 @@ function [forbidden_list, predImg] = evaluate_std(Preddies, forbidden_list, pred
 
 
 switch checkType
+
+    % Centroid case is obsolete %
     case 'Centroid' %kind of a mess - don't know how many standard deviations to use or whether to check against both centroid coordinates or just one
         meanCent = mean(vertcat(Preddies{2,setdiff(1:end, forbidden_list)}));
         stdCent = std(vertcat(Preddies{2,setdiff(1:end, forbidden_list)}));
@@ -15,8 +17,6 @@ switch checkType
                 disp(i)
                 
             end
-
-
         end
 
     case 'BoxOverlap'
@@ -76,7 +76,6 @@ switch checkType
                 if bwconncomp(img).NumObjects > maxObj
                     disp("Multiple areas detected in fixed image")
                     img = fill_areas(img,tempRP);
-                    img = imfill(img,'holes');
                 else
                     img = imfill(img,'holes');
                 end
@@ -90,6 +89,7 @@ switch checkType
                 else
                     predImg{i} = img;
                     disp("Segmentation fixed!")
+                    disp(i)
                 end
             end
         end

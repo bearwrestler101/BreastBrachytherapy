@@ -7,6 +7,8 @@ function canvas = TemplateMatching(frame, stitch_indices, image_cell)
 %alignment and seeing which fits best
 
 close all; 
+
+% hard coded intervals to account for transducer misalignment
 % 1->2 -8
 % 2->3 -7
 
@@ -89,5 +91,23 @@ canvas = canvas2 + canvas3;
 overlap = canvas2 & canvas3;
 canvas(overlap) = canvas(overlap)/2;
 
+%rendering vector images for figures - can be removed
+% figure
+% imshow(firstImage)
+% hold on
+% rectangle('Position', [440 15 170 635], 'EdgeColor','b', 'LineWidth',3)
+% hold off
+% 
+% ax = gcf;
+% exportgraphics(ax,'test1.pdf','ContentType','vector')
+% 
+% figure
+% imshow(secondImage)
+% hold on
+% rectangle('Position', [1 1 189 696], 'EdgeColor','b', 'LineWidth',3)
+% hold off
+% 
+% ax = gcf;
+% exportgraphics(ax,'test.pdf','ContentType','vector')
 
 end

@@ -1,6 +1,6 @@
 clc; close all; clearvars -except out;
 
-%mostly used with beef_silica_all
+%load beef_silica_all and add ActiveContour and ImageStitch folders to path
 
 % extracts relevant index/image/pos from raw data
 [index_cell, image_cell, pos_cell] = Prep_pt2pt(out);
@@ -22,8 +22,6 @@ for i = 1:size(iLog,1)
     image_cell{iLog(i,1),1} = [];
 end
 
-%-------%
-
 % remove empties
 index_cell = index_cell(all(index_cell, 2));
 pos_cell = pos_cell(~cellfun('isempty',pos_cell));
@@ -32,13 +30,11 @@ image_cell = image_cell(~cellfun('isempty',image_cell));
 % returns a matrix of indices reorganized to fit scanning path
 stitch_indices = ImagesForStitch(index_cell, pos_cell);
 
-% stitches images together
+% stitches images together - the -15 is hardcoded based on misalignment!!!
 stitchedImages = cell(size(stitch_indices,1)-15,1);
 for i = 16:size(stitch_indices,1)
     stitchedImages{i-15} = TemplateMatching(i,stitch_indices, image_cell);
 end
-
-%% 
 
 % pads stitched images to make same size
 yMax = max(cellfun('size', stitchedImages,1));
@@ -48,11 +44,17 @@ for i = 1:size(stitchedImages)
         xMax-size(stitchedImages{i},2)],'post');
 end
 
-% active contouring stitched images - hard coded frames
+%% Active contouring - obsolete as of UNet
+
+% active contouring stitched images - hardcoded frames
 startPointFrame = 1;
 midPointFrame = 7;
 endPointFrame = 13;
 contourCell = ActiveContour(startPointFrame, midPointFrame, endPointFrame,stitchedImages, pos_cell);
+%function operation for activecontour was commented out
+
+%%
+
 
 % 2D contour and 3D shape interpolation
 [triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell);
