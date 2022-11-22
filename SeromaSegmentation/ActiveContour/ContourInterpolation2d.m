@@ -7,7 +7,7 @@ interp_coords = cell(size(contours,1), 1);
 
 for k = 1:size(contours,1)
     cnt = contours{k,1};
-    
+
     dx = diff(cnt(:,2));
     dy = diff(cnt(:,1));
     
@@ -19,10 +19,14 @@ for k = 1:size(contours,1)
 
     ds = perim/N;
     dSi = ds*(0:N).';
-    dSi(end) = dSi(end)-.005;
+%     dSi(end) = dSi(end)-.005;
     
-    xi = interp1(d, cnt(:,2), dSi, 'spline');
-    yi = abs(-1.*(interp1(d, cnt(:,1), dSi, 'spline')));
+%     xi = interp1(d, cnt(:,2), dSi, 'spline');
+%     yi = abs(-1.*(interp1(d, cnt(:,1), dSi, 'spline')));
+
+    xi = csaps(d, cnt(:,2), 0.005, dSi);
+    yi = csaps(d, cnt(:,1), 0.005, dSi);
+    
     interp_coords{k,1} = [yi xi];
 end
 

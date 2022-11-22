@@ -1,4 +1,4 @@
-%add predictions and Libs folder to path
+%add predictions and Libs folders to path
 
 
 close all; %clear;
@@ -68,7 +68,6 @@ forbidden_list = sort(unique(forbidden_list));
 %clear our endpoints from allPreds and forbidden_list as they are likely
 %erroneous and cannot be reconstructed from surrounding segmentations
 
-%testing case with fake forbidden_list
 forbidden_list_save = forbidden_list;
 lastErase = 1;
 lastErase_end = size(allPreds,2);

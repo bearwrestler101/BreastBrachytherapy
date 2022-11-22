@@ -91,7 +91,9 @@ canvas = canvas2 + canvas3;
 overlap = canvas2 & canvas3;
 canvas(overlap) = canvas(overlap)/2;
 
-%rendering vector images for figures - can be removed
+%rendering vector images for figures - can be removed - started collecting
+%at frame 23 (stitchedImages=8)
+% 
 % figure
 % imshow(firstImage)
 % hold on
@@ -99,7 +101,7 @@ canvas(overlap) = canvas(overlap)/2;
 % hold off
 % 
 % ax = gcf;
-% exportgraphics(ax,'test1.pdf','ContentType','vector')
+% exportgraphics(ax,'3firstimage.pdf','ContentType','vector')
 % 
 % figure
 % imshow(secondImage)
@@ -108,6 +110,13 @@ canvas(overlap) = canvas(overlap)/2;
 % hold off
 % 
 % ax = gcf;
-% exportgraphics(ax,'test.pdf','ContentType','vector')
+% exportgraphics(ax,'3secondimage.pdf','ContentType','vector')
+% 
+% figure
+% imshow(canvas)
+% hold on
+% rectangle('Position',[438 1 176 710], 'EdgeColor','b','LineWidth',3);
+% rectangle('Position',[869 1 182 710], 'EdgeColor','b','LineWidth', 3);
+% exportgraphics(gcf,'canvas3.pdf','ContentType','vector')
 
 end

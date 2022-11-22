@@ -1,4 +1,4 @@
-clc; close all; clearvars -except out;
+clc; clearvars -except out;
 
 %testing tags
 
@@ -46,7 +46,7 @@ for i = 1:size(stitchedImages)
         xMax-size(stitchedImages{i},2)],'post');
 end
 
-%% Active contouring - obsolete as of UNet
+%% Active contouring - deprecated as of UNet segmentations
 
 % active contouring stitched images - hardcoded frames
 startPointFrame = 1;
@@ -56,11 +56,15 @@ contourCell = ActiveContour(startPointFrame, midPointFrame, endPointFrame,stitch
 %function operation for activecontour was commented out
 
 %%
-
-
+contourCell = cell(size(predImg,1),1);
+for i = 1:size(predImg,1)
+    contour_temp = bwboundaries(predImg{i});
+    contourCell{i} = contour_temp{1,1};
+end
+%%
 % 2D contour and 3D shape interpolation
 [triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell);
-
+%%
 figure
 hold on
 fv = trimesh(triangles, surfaceCoords(:,3), surfaceCoords(:,1), surfaceCoords(:,2));
