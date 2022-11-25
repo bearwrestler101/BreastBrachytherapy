@@ -1,6 +1,6 @@
 function interp_coords = ContourInterpolation2d(contours, N)
-%Interpolation of contours
 
+%Interpolation of contours
 interp_coords = cell(size(contours,1), 1);
 
 %https://stackoverflow.com/questions/27429784/equally-spaced-points-in-a-contour/27430360#27430360
@@ -24,10 +24,23 @@ for k = 1:size(contours,1)
 %     xi = interp1(d, cnt(:,2), dSi, 'spline');
 %     yi = abs(-1.*(interp1(d, cnt(:,1), dSi, 'spline')));
 
-    xi = csaps(d, cnt(:,2), 0.005, dSi);
-    yi = csaps(d, cnt(:,1), 0.005, dSi);
-    
-    interp_coords{k,1} = [yi xi];
+    %Cubic smoothing spline
+    xi = csaps(d, cnt(:,2), 0.003);
+    yi = csaps(d, cnt(:,1), 0.003);
+    xi = ppval(xi, xi.breaks); %evaluates at original points 
+    yi = ppval(yi, yi.breaks);
+   
+    %Close the contour
+    xinew = xi;
+    yinew = yi; 
+    xinew(1) = xinew(end); %close data
+    yinew(1) = yinew(end);
+    xinew = csape(d, xinew, 'periodic'); %TODO: periodic doesn't seem to do anything
+    yinew = csape(d, yinew, 'periodic');
+    xinew = ppval(xinew, dSi); %evaluate at equidistant points
+    yinew = ppval(yinew, dSi);
+    normals(xinew, yinew)
+    interp_coords{k,1} = [yinew xinew];
 end
 
 end
