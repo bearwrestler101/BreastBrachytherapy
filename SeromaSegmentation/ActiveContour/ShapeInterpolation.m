@@ -1,4 +1,4 @@
-function [triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell)
+function [triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell, stitch_indices)
 
 %need to figure out best epislon and rbf function
 %need to figure out most accurate inter-slice distance
@@ -11,10 +11,27 @@ epsilon = 0.2; %%%EDIT TO IMPROVE FIT%%%
 zValuesRescale = 60; %60 is probably wrong, need some sort of calibration
 contourLength = 80;
 
+%% Interslice distances - TODO maybe put this in main?
+org_pos_cell = pos_cell(stitch_indices); %reorganize pos_cell
+trunc_pos_cell = cell(11,3); 
+mean_pos_cell= cell(11,1);
+
+% offsets are hardcoded (see ImagesForStitch.m)
+% obtain pos of scans with seroma (hardcoded)
+for i = 1:size(trunc_pos_cell,1)
+    trunc_pos_cell(i,:) = [org_pos_cell(i+15,1), org_pos_cell(i+15-8,2), org_pos_cell(i+15-15,3)];
+end
+
+% take mean in x of scans with seroma
+for i = 1:11
+    mean_pos_cell{i,1} = mean([trunc_pos_cell{i,1}(1), trunc_pos_cell{i,2}(1), trunc_pos_cell{i,3}(1)]);
+end
+mean_pos_mat = cell2mat(mean_pos_cell);
+
 %% Contour Interpolation
 %import images, preprocess, find contours, remove poor contours
 
-contourCellInt = ContourInterpolation2d(contourCell, num_points);
+contourCellInt = ContourInterpolation2d(contourCell, num_points, mean_pos_mat);
 
 % for interpolation endpoint error prevention
 contourCellInt = [contourCellInt(1,1); contourCellInt(1,1); contourCellInt; contourCellInt(end,1); contourCellInt(end,1)];
@@ -31,6 +48,12 @@ for i = 1:size(zValues,1)
 end
 zValues = rescale(zValues, 0, zValuesRescale);
 zInt = linspace(min(zValues),max(zValues), contourLength); %points to interpolate at
+%%
+
+
+
+
+
 
 %% Shape Interpolation
 

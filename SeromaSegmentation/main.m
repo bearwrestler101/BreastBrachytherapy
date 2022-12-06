@@ -1,5 +1,7 @@
 clc; clearvars -except out;
 
+%when scanning, make sure probe is oriented correctly
+
 %testing tags
 
 %load beef_silica_all and add ActiveContour and ImageStitch folders to path
@@ -32,7 +34,9 @@ image_cell = image_cell(~cellfun('isempty',image_cell));
 % returns a matrix of indices reorganized to fit scanning path
 stitch_indices = ImagesForStitch(index_cell, pos_cell);
 
-% stitches images together - the -15 is hardcoded based on misalignment!!!
+
+%%
+% stitches images together - the -15 is hardcoded to ignore first 15 bad images!!!
 stitchedImages = cell(size(stitch_indices,1)-15,1);
 for i = 16:size(stitch_indices,1)
     stitchedImages{i-15} = TemplateMatching(i,stitch_indices, image_cell);
@@ -53,8 +57,12 @@ startPointFrame = 1;
 midPointFrame = 7;
 endPointFrame = 13;
 contourCell = ActiveContour(startPointFrame, midPointFrame, endPointFrame,stitchedImages, pos_cell);
-%function operation for activecontour was commented out
+%function line for activecontour() is commented out
 
+%%
+cd simpler_tests/img_prep_for_dl_segmentation
+prediciton_verification;
+cd ../..
 %%
 contourCell = cell(size(predImg,1),1);
 for i = 1:size(predImg,1)
@@ -63,7 +71,7 @@ for i = 1:size(predImg,1)
 end
 %%
 % 2D contour and 3D shape interpolation
-[triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell);
+[triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell, stitch_indices);
 %%
 figure
 hold on

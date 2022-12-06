@@ -37,7 +37,6 @@ for j = 1:size(stitch_indices,2)
 end
 % flip middle path
 stitch_indices = [stitch_indices(:,1) flipud(stitch_indices(:,2)) stitch_indices(:,3)];
-
 end
 
 % 

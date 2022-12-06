@@ -3,7 +3,7 @@ function [forbidden_list, predImg] = evaluate_std(Preddies, forbidden_list, pred
 
 switch checkType
 
-    % Centroid case is obsolete %
+    % Centroid case is deprecated %
     case 'Centroid' %kind of a mess - don't know how many standard deviations to use or whether to check against both centroid coordinates or just one
         meanCent = mean(vertcat(Preddies{2,setdiff(1:end, forbidden_list)}));
         stdCent = std(vertcat(Preddies{2,setdiff(1:end, forbidden_list)}));

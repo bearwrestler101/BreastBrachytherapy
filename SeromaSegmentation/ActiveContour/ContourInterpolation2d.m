@@ -1,4 +1,6 @@
-function interp_coords = ContourInterpolation2d(contours, N)
+function interp_coords = ContourInterpolation2d(contours, N, mean_pos_mat)
+
+%TODO insert mean_pos_mat values in here or normals.m function?
 
 %Interpolation of contours
 interp_coords = cell(size(contours,1), 1);
@@ -39,9 +41,12 @@ for k = 1:size(contours,1)
     yinew = csape(d, yinew, 'periodic');
     xinew = ppval(xinew, dSi); %evaluate at equidistant points
     yinew = ppval(yinew, dSi);
-    normals(xinew, yinew)
+    generatedPoints = normals(xinew, yinew); %find normals of contours and off-surface data
+    generatedPoints = [generatedPoints(:,1:2) repelem(mean_pos_mat(k),size(generatedPoints,1))', generatedPoints(:,3)]; %insert z-values
     interp_coords{k,1} = [yinew xinew];
+
 end
+
 
 end
 

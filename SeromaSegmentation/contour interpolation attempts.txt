@@ -1,0 +1,52 @@
+both get closer than just using interp1
+
+- end conditions specified
+K>> conds = [0 0]
+K>> xtest = csape(d, [50 cnt(:,2)' 50], conds);
+K>> xytest = csape(d, [119 cnt(:,1)' 119], conds);
+K>> ytest= xytest;
+K>> xval = ppval(xtest,dSi);
+K>> yval = ppval(ytest,dSi);
+K>> plot(xval, -yval)
+
+
+- no end conditions specified
+K>> xtest = csape(d, cnt(:,2));
+K>> xval = ppval(xtest,dSi);
+K>> ytest = cscape(d, cnt(:,1));
+K>> ytest = csape(d, cnt(:,1));
+K>> yval = ppval(ytest,dSi);
+K>> plot(xval,-yval)
+
+
+tried adding (118 51) to end of cnt and then running all of the code
+
+tried xi(end) = xi(1) and yi(end) = yi(1) but it comes out sharp and unnatural
+
+matlab interpolation seems to not like to return to the same point
+
+Replicating data seemed to help (kinda) - https://www.mathworks.com/matlabcentral/answers/1768840-how-to-interpolate-a-closed-polar-plot
+You interpolate along the long dataset but only request info at the desired points (ds was scaled otherwise dSi goes around 3 times like the data)
+K>> cntlong = [cnt(1:end-1,:); cnt; cnt(2:end,:)];
+K>> dx = diff(cntlong(:,2));
+dy = diff(cntlong(:,1));
+dS = sqrt(dx.^2+dy.^2);
+dS = [0; dS];
+d = cumsum(dS);
+perim = d(end);
+ds = perim/(3*N);
+dSi = ds*(0:N).';
+%     dSi(end) = dSi(end)-.005;
+%     xi = interp1(d, cnt(:,2), dSi, 'spline');
+%     yi = abs(-1.*(interp1(d, cnt(:,1), dSi, 'spline')));
+xi = csaps(d, cntlong(:,2), 0.005, dSi);
+yi = csaps(d, cntlong(:,1), 0.005, dSi);
+K>> plot(xi,-yi)
+
+
+WORKS - data must have same end and beginning though - used csaps to creat a smooth contour first and then use csape to close it
+xinew = csape(d, cnt(:,2),'periodic');
+yinew = csape(d, cnt(:,1),'periodic');
+xinew = ppval(xinew, dSi);
+yinew = ppval(yinew, dSi);
+plot(xinew, yinew)

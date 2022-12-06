@@ -1,36 +1,48 @@
-function [] = normals(xinew, yinew)
+function [generatedPoints] = normals(xi, yi)
+yi = -yi; %TODO: may not matter as we're just getting points
 %close all
-figure
-hold on
-plot(xinew, yinew)
-offSurface = [length(xinew),2];
+[onSurf, offSurf_out1, ~, offSurf_in1, ~] = deal(zeros(size(xi,1)-1, 3));
+offSurfacedist = 3;
+normalLine = 10;
 
-for i = 1:length(xinew)-1
+for i = 1:length(xi)-1
 
-    if i ~= length(xinew)-1
-        A = [xinew(i),yinew(i)]; B = [xinew(i+2),yinew(i+2)];
+    if i ~= length(xi)-1
+        A = [xi(i),yi(i)]; B = [xi(i+2),yi(i+2)];
     else
-        A = [xinew(i),yinew(i)]; B = [xinew(1),yinew(1)];
+        A = [xi(i),yi(i)]; B = [xi(2),yi(2)];
     end
 
-    x = [A(1);B(1)]; y = [A(2);B(2)];
-
-    normal = [xinew(i+1), yinew(i+1)] + null(A-B)'.*10;
-    cntrAvg = [mean(xinew), mean(yinew)];
-    offSurface(i,:) = ([xinew(i+1),yinew(i+1)]+null(A-B)'.*3);
+    testNormal = [xi(i+1), yi(i+1)] + null(A-B)'.*normalLine;
 
     %If normal is pointing inward, switch directions
-    if norm(cntrAvg-[xinew(i+1), yinew(i+1)])>norm(cntrAvg-[normal(1), normal(2)])
-        normal = [xinew(i+1), yinew(i+1)] - null(A-B)'.*10;
-        offSurface(i,:) = ([xinew(i+1),yinew(i+1)]-null(A-B)'.*3);
+    cntrAvg = [mean(xi), mean(yi)];
+    if norm(cntrAvg-[xi(i+1), yi(i+1)])>norm(cntrAvg-[testNormal(1), testNormal(2)])
+        directionAdjust = -1;
+    else
+        directionAdjust = 1;
     end
 
-    line([xinew(i+1),normal(1)],[yinew(i+1),normal(2)])
+%     normal = [xi(i+1), yi(i+1)] + directionAdjust .* null(A-B)' .* normalLine;
 
+    offSurf_out1(i,:) = [([xi(i+1),yi(i+1)] + directionAdjust .* null(A-B)' .* offSurfacedist),  offSurfacedist];
+%     offSurface(i+(size(xi,1)-1),:) = [([xi(i+1),yi(i+1)] + directionAdjust .* null(A-B)' .* offSurfacedist*2), offSurfacedist*2];
+    offSurf_in1(i,:) = [([xi(i+1),yi(i+1)] + directionAdjust .* null(A-B)' .* -offSurfacedist), -offSurfacedist];
+%     offSurface(i+(size(xi,1)-1)*3,:) = [([xi(i+1),yi(i+1)] + directionAdjust .* null(A-B)' .* -offSurfacedist*2), -offSurfacedist*2];
     
+    onSurf(i,:) = [xi(i+1), yi(i+1),0];
+    
+%     line([xi(i+1),normal(1)],[yi(i+1),normal(2)])
 
 end
 
- plot(offSurface(:,1),offSurface(:,2),'o')
+offSurf = [offSurf_out1; offSurf_in1];
+generatedPoints = [onSurf; offSurf];
+
+% figure
+% hold on
+% plot(xi, yi)
+% plot(offSurf(:,1),offSurf(:,2),'o')
+
 end
 % https://www.mathworks.com/matlabcentral/answers/85686-how-to-calculate-normal-to-a-line
