@@ -26,9 +26,7 @@ for i = 1:length(xi)-1
 %     normal = [xi(i+1), yi(i+1)] + directionAdjust .* null(A-B)' .* normalLine;
 
     offSurf_out1(i,:) = [([xi(i+1),yi(i+1)] + directionAdjust .* null(A-B)' .* offSurfacedist),  offSurfacedist];
-%     offSurface(i+(size(xi,1)-1),:) = [([xi(i+1),yi(i+1)] + directionAdjust .* null(A-B)' .* offSurfacedist*2), offSurfacedist*2];
     offSurf_in1(i,:) = [([xi(i+1),yi(i+1)] + directionAdjust .* null(A-B)' .* -offSurfacedist), -offSurfacedist];
-%     offSurface(i+(size(xi,1)-1)*3,:) = [([xi(i+1),yi(i+1)] + directionAdjust .* null(A-B)' .* -offSurfacedist*2), -offSurfacedist*2];
     
     onSurf(i,:) = [xi(i+1), yi(i+1),0];
     
