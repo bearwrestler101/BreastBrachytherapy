@@ -1,4 +1,6 @@
-function [triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell, org_pos_cell)
+% function [triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell, org_pos_cell)
+function [surface] = ShapeInterpolation(contourCell, pos_cell, org_pos_cell)
+
 
 %need to figure out best epislon and rbf function
 %need to figure out most accurate inter-slice distance
@@ -34,6 +36,10 @@ genPnts_cell = ContourInterpolation2d(contourCell, num_points, mean_pos_mat);
 
 %%
 genPnts = cell2mat(genPnts_cell);
+% genPnts(:,3) = genPnts(:,3)*1000;
+genPnts(:,1) = rescale(genPnts(:,1), -10,10);
+genPnts(:,2) = rescale(genPnts(:,2), -10,10);
+genPnts(:,3) = rescale(genPnts(:,3), -5,5);
 
 P = [repelem(1, size(genPnts,1))' genPnts(:,1:3)];
 A = squareform(pdist(genPnts(:,1:3)));
@@ -47,27 +53,28 @@ Vals = [f; Zero_col];
 coeffs = Pnts\Vals;
 [lambda, c] = deal(coeffs(1:end-4), coeffs(end-3:end));
 
-testpntsx = min(genPnts(:,1)):1:max(genPnts(:,1));
-testpntsy = min(genPnts(:,2)):1:max(genPnts(:,2));
-testpntsz = min(genPnts(:,3)):0.001:max(genPnts(:,3));
+testpntsx = min(genPnts(:,1)):0.5:max(genPnts(:,1)); %lowering number of testpnts could potentially be giving the solution less area to get creative
+testpntsy = min(genPnts(:,2)):0.5:max(genPnts(:,2));
+testpntsz = min(genPnts(:,3)):0.5:max(genPnts(:,3));
 
 [meshx, meshy, meshz] = meshgrid(testpntsx, testpntsy, testpntsz);
 
-% poly = c(1) + c(2)*meshx + c(3)*meshy + c(4)*meshz;
 surface = zeros(size(meshx(:),1),1);
 
 for i = 1:size(meshx(:),1)
     summation = 0;
     for j = 1:size(genPnts,1)
-        summation = summation + lambda(j)*norm([meshx(i), meshy(i), meshz(i)]-genPnts(j,1:3));
+        summation = summation + lambda(j)*norm([meshx(i), meshy(i), meshz(i)]-genPnts(j,1:3)); 
     end
     poly = c(1) + c(2)*meshx(i) + c(3)*meshy(i) + c(4)*meshz(i);
     surface(i)=summation+poly;
 end
 surface = reshape(surface,size(meshx));
+ 
+%can use triangulation() with isosurface() [faces, verts] outputs, followed
+%by stlwrite() with triangulation output
 
 breakpoint = 0;
-
 % TESTING script
 % poly = c(1) + c(2)*testpnt(1) + c(3)*testpnt(2) + c(4)*testpnt(3);
 % sum = 0;

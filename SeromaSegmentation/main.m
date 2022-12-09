@@ -71,7 +71,9 @@ for i = 1:size(predImg,1)
 end
 %%
 % 2D contour and 3D shape interpolation
-[triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell, pos_cell(stitch_indices));
+% [triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell, pos_cell(stitch_indices));
+[surface] = ShapeInterpolation(contourCell, pos_cell, pos_cell(stitch_indices));
+
 %%
 figure
 hold on

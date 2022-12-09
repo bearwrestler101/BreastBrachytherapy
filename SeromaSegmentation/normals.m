@@ -1,9 +1,13 @@
 function [generatedPoints] = normals(xi, yi)
 yi = -yi; %TODO: may not matter as we're just getting points
-%close all
+
 [onSurf, offSurf_out1, ~, offSurf_in1, ~] = deal(zeros(size(xi,1)-1, 3));
 offSurfacedist = 3;
 normalLine = 10;
+
+figure
+hold on
+plot(xi, yi)
 
 for i = 1:length(xi)-1
 
@@ -23,24 +27,21 @@ for i = 1:length(xi)-1
         directionAdjust = 1;
     end
 
-%     normal = [xi(i+1), yi(i+1)] + directionAdjust .* null(A-B)' .* normalLine;
+    normal = [xi(i+1), yi(i+1)] + directionAdjust .* null(A-B)' .* normalLine;
 
     offSurf_out1(i,:) = [([xi(i+1),yi(i+1)] + directionAdjust .* null(A-B)' .* offSurfacedist),  offSurfacedist];
     offSurf_in1(i,:) = [([xi(i+1),yi(i+1)] + directionAdjust .* null(A-B)' .* -offSurfacedist), -offSurfacedist];
     
     onSurf(i,:) = [xi(i+1), yi(i+1),0];
     
-%     line([xi(i+1),normal(1)],[yi(i+1),normal(2)])
+    line([xi(i+1),normal(1)],[yi(i+1),normal(2)])
 
 end
 
 offSurf = [offSurf_out1; offSurf_in1];
 generatedPoints = [onSurf; offSurf];
 
-% figure
-% hold on
-% plot(xi, yi)
-% plot(offSurf(:,1),offSurf(:,2),'o')
+plot(offSurf(:,1),offSurf(:,2),'o')
 
 end
 % https://www.mathworks.com/matlabcentral/answers/85686-how-to-calculate-normal-to-a-line
