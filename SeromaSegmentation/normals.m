@@ -43,5 +43,15 @@ generatedPoints = [onSurf; offSurf];
 
 plot(offSurf(:,1),offSurf(:,2),'o')
 
+for i = 1:size(offSurace, 1)
+    %TODO: reiterative call adjustment until distance fixed, fixed
+    %offSurfacedist direction, remove the point's distance check against
+    %itself (setdiff())
+    V = vecnorm(offSurf(i,1:2)'-generatedPoints(:,1:2)',2,1);
+    [M, I] = min(V);
+    if I ~= i
+        offSurf(i,:) = [([xi(i+1),yi(i+1)] + directionAdjust .* null(A-B)' .* offSurfacedist-0.2),  offSurfacedist-0.2];
+    end
+
 end
 % https://www.mathworks.com/matlabcentral/answers/85686-how-to-calculate-normal-to-a-line
