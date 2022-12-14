@@ -61,7 +61,7 @@ contourCell = ActiveContour(startPointFrame, midPointFrame, endPointFrame,stitch
 
 %%
 cd simpler_tests/img_prep_for_dl_segmentation
-prediciton_verification;
+run("prediction_verification")
 cd ../..
 %%
 contourCell = cell(size(predImg,1),1);

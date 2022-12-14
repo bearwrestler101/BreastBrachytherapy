@@ -2,8 +2,8 @@
 function [surface] = ShapeInterpolation(contourCell, pos_cell, org_pos_cell)
 
 
-%need to figure out best epislon and rbf function
-%need to figure out most accurate inter-slice distance
+%need to figure out best epislon and rbf function - deprecated
+%need to figure out most accurate inter-slice distance - deprecated
 
 
 %% Constants
@@ -36,7 +36,6 @@ genPnts_cell = ContourInterpolation2d(contourCell, num_points, mean_pos_mat);
 
 %%
 genPnts = cell2mat(genPnts_cell);
-% genPnts(:,3) = genPnts(:,3)*1000;
 genPnts(:,1) = rescale(genPnts(:,1), -10,10);
 genPnts(:,2) = rescale(genPnts(:,2), -10,10);
 genPnts(:,3) = rescale(genPnts(:,3), -5,5);
@@ -53,7 +52,7 @@ Vals = [f; Zero_col];
 coeffs = Pnts\Vals;
 [lambda, c] = deal(coeffs(1:end-4), coeffs(end-3:end));
 
-testpntsx = min(genPnts(:,1)):0.5:max(genPnts(:,1)); %lowering number of testpnts could potentially be giving the solution less area to get creative
+testpntsx = min(genPnts(:,1)):0.5:max(genPnts(:,1)); %lowering number of testpnts could potentially be giving isosurface less area to get creative
 testpntsy = min(genPnts(:,2)):0.5:max(genPnts(:,2));
 testpntsz = min(genPnts(:,3)):0.5:max(genPnts(:,3));
 
