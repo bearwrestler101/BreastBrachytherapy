@@ -3,11 +3,9 @@ yi = -yi; %TODO: may not matter as we're just getting points
 
 [onSurf, offSurf_out1, ~, offSurf_in1, ~] = deal(zeros(size(xi,1)-1, 3));
 offSurfacedist = 3;
-normalLine = 10;
-% 
-% figure
-% hold on
-% plot(xi, yi)
+normalLine = 4;
+
+% figure; hold on; plot(xi, yi);
 
 for i = 1:length(xi)-1
 
@@ -20,8 +18,7 @@ for i = 1:length(xi)-1
     testNormal = [xi(i+1), yi(i+1)] + null(A-B)'.*normalLine;
 
     %If normal is pointing inward, switch directions
-    cntrAvg = [mean(xi), mean(yi)];
-    if norm(cntrAvg-[xi(i+1), yi(i+1)])>norm(cntrAvg-[testNormal(1), testNormal(2)])
+    if inpolygon(testNormal(1),testNormal(2),xi,yi)
         directionAdjust = -1;
     else
         directionAdjust = 1;
@@ -41,37 +38,47 @@ end
 offSurf = [offSurf_out1; offSurf_in1];
 generatedPoints = [onSurf; offSurf];
 
-% plot(offSurf(:,1),offSurf(:,2),'o')
-wtf = [];
-onSurf2 = [onSurf; onSurf];
-for i = 1:size(offSurf, 1)
-    %TODO:fix offSurfacedist direction, fix normal generation direction above, run
-    %through all points again to make sure that closest values had been achieved
-    V = vecnorm(offSurf(i,1:2)'-generatedPoints(:,1:2)');
-    [~, I] = min(V(setdiff(1:end, size(xi,1)-1+i)));
-    saveLength = offSurf(i,1:2)-onSurf2(i,1:2);
-    inc = 0.1;
-    if I ~= i && i <= 100
+numPnts = size(xi,1)-1;
 
-        while I~=i
+for numRepeat = 1:15
+    for i = 1:size(offSurf, 1)
+        %TODO: fix normal generation direction above
 
-            offSurf_adjust = onSurf2(i,1:2)+ saveLength - inc .* saveLength;
-            V = vecnorm(offSurf_adjust'-generatedPoints(:,1:2)');
-            [~, I] = min(V(setdiff(1:end, size(xi,1)-1+i)));
-            inc = inc + 0.1;
+        V = vecnorm(offSurf(i,1:2)'-generatedPoints(:,1:2)');
+        [~, I] = min(V(setdiff(1:end, numPnts+i)));
+
+        inc = 0.1;
+
+        if I ~= i && i <= 100
+            saveLength = offSurf(i,1:2)-onSurf(i,1:2);
+            while I~=i
+
+                offSurf_adjust = onSurf(i,1:2)+ saveLength - inc .* saveLength;
+                V = vecnorm(offSurf_adjust'-generatedPoints(:,1:2)');
+                [~, I] = min(V(setdiff(1:end, numPnts+i)));
+                inc = inc + 0.1;
+            end
+            offSurf(i,1:2) = offSurf_adjust;
+            offSurf(i,3) =  norm(offSurf(i,1:2)-onSurf(i,1:2));
+            generatedPoints = [onSurf; offSurf];
+
+        elseif I ~=i-numPnts && i > 100
+            saveLength = offSurf(i,1:2)-onSurf(i-numPnts,1:2);
+            while I~=i-numPnts
+                offSurf_adjust = onSurf(i-numPnts,1:2) + (saveLength - inc.*saveLength);
+                V = vecnorm(offSurf_adjust'-generatedPoints(:,1:2)');
+                [~, I] = min(V(setdiff(1:end, numPnts+i)));
+                inc = inc + 0.1;
+            end
+            offSurf(i,1:2) = offSurf_adjust;
+            offSurf(i,3) =  -norm(offSurf(i,1:2)-onSurf(i-numPnts,1:2));
+            generatedPoints = [onSurf; offSurf];
         end
-        offSurf(i,1:2) = offSurf_adjust;
-
-    elseif I ~=i-100 && i > 100
-        while I~=i-100
-            offSurf_adjust = onSurf2(i,1:2) + (saveLength - inc.*saveLength);
-            V = vecnorm(offSurf_adjust'-generatedPoints(:,1:2)');
-            [~, I] = min(V(setdiff(1:end, size(xi,1)-1+i)));
-            inc = inc + 0.1;
-        end
-        offSurf(i,1:2) = offSurf_adjust;
     end
 end
+
+
+% figure; hold on; plot(onSurf(:,1),onSurf(:,2),'o'); plot(offSurf(:,1),offSurf(:,2),'o');
 
 breakpoint = 0;
 % https://www.mathworks.com/matlabcentral/answers/85686-how-to-calculate-normal-to-a-line

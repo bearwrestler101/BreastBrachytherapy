@@ -36,9 +36,9 @@ genPnts_cell = ContourInterpolation2d(contourCell, num_points, mean_pos_mat);
 
 %%
 genPnts = cell2mat(genPnts_cell);
-genPnts(:,1) = rescale(genPnts(:,1), -10,10);
-genPnts(:,2) = rescale(genPnts(:,2), -10,10);
-genPnts(:,3) = rescale(genPnts(:,3), -5,5);
+genPnts(:,1) = rescale(genPnts(:,1), -40,40);
+genPnts(:,2) = rescale(genPnts(:,2), -40,40);
+genPnts(:,3) = rescale(genPnts(:,3), -40,40);
 
 P = [repelem(1, size(genPnts,1))' genPnts(:,1:3)];
 A = squareform(pdist(genPnts(:,1:3)));
@@ -52,9 +52,9 @@ Vals = [f; Zero_col];
 coeffs = Pnts\Vals;
 [lambda, c] = deal(coeffs(1:end-4), coeffs(end-3:end));
 
-testpntsx = min(genPnts(:,1)):0.5:max(genPnts(:,1)); %lowering number of testpnts could potentially be giving isosurface less area to get creative
-testpntsy = min(genPnts(:,2)):0.5:max(genPnts(:,2));
-testpntsz = min(genPnts(:,3)):0.5:max(genPnts(:,3));
+testpntsx = min(genPnts(:,1)):1:max(genPnts(:,1)); %lowering number of testpnts could potentially be giving isosurface less area to get creative
+testpntsy = min(genPnts(:,2)):1:max(genPnts(:,2));
+testpntsz = min(genPnts(:,3)):1:max(genPnts(:,3));
 
 [meshx, meshy, meshz] = meshgrid(testpntsx, testpntsy, testpntsz);
 
@@ -69,7 +69,9 @@ for i = 1:size(meshx(:),1)
     surface(i)=summation+poly;
 end
 surface = reshape(surface,size(meshx));
- 
+
+isosurface(meshx, meshy, meshz, surface, 0)
+
 %can use triangulation() with isosurface() [faces, verts] outputs, followed
 %by stlwrite() with triangulation output
 
