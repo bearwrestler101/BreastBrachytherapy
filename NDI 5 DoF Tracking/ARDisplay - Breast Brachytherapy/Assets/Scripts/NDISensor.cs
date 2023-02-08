@@ -93,7 +93,7 @@ public class NDISensor : MonoBehaviour
 
             try
             {
-                
+
                 // Bytes empfangen.
                 IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 1500);
                 byte[] data = client.Receive(ref anyIP);
@@ -104,10 +104,9 @@ public class NDISensor : MonoBehaviour
                     ddata[i] = (float)BitConverter.ToDouble(data, i * 8);
                 }
 
-                //print(">>\n" + ddata[0] + "\n" + ddata[1] + "\n" + ddata[2] + "\n" + ddata[3] + "\n" + ddata[4] + "\n" + ddata[5] + "\n" + ddata[6]);
-
-                localPosition = new Vector3(ddata[0], ddata[1], ddata[2]);
-                localRotation = new Quaternion(ddata[3], ddata[4], ddata[5], ddata[6]);
+                print(">>\n" + ddata[0] + "\n" + ddata[1] + "\n" + ddata[2] + "\n" + ddata[3] + "\n" + ddata[4] + "\n" + ddata[5] + "\n" + ddata[6]);
+                localPosition = new Vector3(0.1f*ddata[1], -0.1f*ddata[0], 0.1f*ddata[2]);
+                localRotation = new Quaternion(ddata[4], ddata[5], ddata[3], ddata[6]);
             }
             catch (Exception err)
             {

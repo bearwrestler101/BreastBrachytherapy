@@ -57,12 +57,15 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\BoneDisplay.cs" />
      <Compile Include="Assets\Scripts\CameraDebug.cs" />
+     <Compile Include="Assets\Scripts\CameraMovement.cs" />
      <Compile Include="Assets\Scripts\CameraObliqueProjection.cs" />
      <Compile Include="Assets\Scripts\ControllerInput.cs" />
      <Compile Include="Assets\Scripts\HapticPlaneDisplay.cs" />
+     <Compile Include="Assets\Scripts\Movement.cs" />
      <Compile Include="Assets\Scripts\NDISensor.cs" />
      <Compile Include="Assets\Scripts\RobotComm.cs" />
      <Compile Include="Assets\Scripts\RobotGetPosition.cs" />
+     <Compile Include="Assets\Scripts\TargetSpawn.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>C:/Users/David/Desktop/Kirill/BreastBrachytherapy/NDI 5 DoF Tracking/ARDisplay - Breast Brachytherapy/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>
