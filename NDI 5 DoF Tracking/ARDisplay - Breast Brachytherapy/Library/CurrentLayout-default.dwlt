@@ -383,9 +383,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
-      m_LastClickedID: 0
-      m_ExpandedIDs: 60fbffff6a31000078310000
+      m_SelectedIDs: 84f1ffff
+      m_LastClickedID: -3708
+      m_ExpandedIDs: 86f1ffff6cfbffff643100007431000082310000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -471,9 +471,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 3.2675781, y: 1.6855469, z: 21.19336}
+    m_Target: {x: 0.9472656, y: 1.1855469, z: 17.958984}
     speed: 2
-    m_Value: {x: 3.2675781, y: 1.6855469, z: 21.19336}
+    m_Value: {x: 0.9472656, y: 1.1855469, z: 17.958984}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -494,21 +494,21 @@ MonoBehaviour:
       speed: 2
       m_Value: 0
     yGrid:
-      m_Target: 1
+      m_Target: 0
       speed: 2
-      m_Value: 1
+      m_Value: 0
     zGrid:
       m_Target: 0
       speed: 2
       m_Value: 0
   m_Rotation:
-    m_Target: {x: 0.09670358, y: -0.6180661, z: 0.076955244, w: 0.77642024}
+    m_Target: {x: 0.029313777, y: -0.3171136, z: 0.00975355, w: 0.9479457}
     speed: 2
-    m_Value: {x: 0.09076478, y: -0.61975753, z: 0.07244934, w: 0.77615297}
+    m_Value: {x: 0.029326664, y: -0.31567293, z: 0.009709002, w: 0.94836503}
   m_Size:
-    m_Target: 10.10489
+    m_Target: 10.750147
     speed: 2
-    m_Value: 10.10489
+    m_Value: 10.287222
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -905,7 +905,7 @@ MonoBehaviour:
     m_PrefName: Preview_InspectorPreview
   m_PreviewWindow: {fileID: 0}
   m_LastInspectedObjectInstanceID: -1
-  m_LastVerticalScrollValue: 0
+  m_LastVerticalScrollValue: 313
 --- !u!114 &18
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -945,11 +945,11 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts
+    - Assets
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scripts
+  - Assets
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\David\Desktop\Kirill\BreastBrachytherapy\NDI 5 DoF Tracking\ARDisplay
     - Breast Brachytherapy
@@ -957,8 +957,8 @@ MonoBehaviour:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 6c2d0000
-    m_LastClickedID: 11628
+    m_SelectedIDs: b22c0000
+    m_LastClickedID: 11442
     m_ExpandedIDs: 00000000b22c000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
