@@ -60,6 +60,7 @@
      <Compile Include="Assets\Scripts\CameraMovement.cs" />
      <Compile Include="Assets\Scripts\CameraObliqueProjection.cs" />
      <Compile Include="Assets\Scripts\ControllerInput.cs" />
+     <Compile Include="Assets\Scripts\Flip.cs" />
      <Compile Include="Assets\Scripts\HapticPlaneDisplay.cs" />
      <Compile Include="Assets\Scripts\Movement.cs" />
      <Compile Include="Assets\Scripts\NDISensor.cs" />
