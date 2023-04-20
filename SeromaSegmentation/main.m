@@ -53,10 +53,10 @@ end
 %% Active contouring - deprecated as of UNet segmentations
 
 % active contouring stitched images - hardcoded frames
-startPointFrame = 1;
-midPointFrame = 7;
-endPointFrame = 13;
-contourCell = ActiveContour(startPointFrame, midPointFrame, endPointFrame,stitchedImages, pos_cell);
+% startPointFrame = 1;
+% midPointFrame = 7;
+% endPointFrame = 13;
+% contourCell = ActiveContour(startPointFrame, midPointFrame, endPointFrame,stitchedImages, pos_cell);
 %function line for activecontour() is commented out
 
 %%
