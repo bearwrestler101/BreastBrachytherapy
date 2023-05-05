@@ -21,8 +21,8 @@ fprintf('Start to receive ... ');
         end
         
         y = typecast(dataReceived, 'double');
+        display(y)
         pause(0.1);
-        
         DATA(:,j)=y;
         display(y);
     end
