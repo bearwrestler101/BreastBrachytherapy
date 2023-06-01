@@ -8,6 +8,9 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Diagnostics;
 
+//https://www.youtube.com/watch?v=sU_Y2g1Nidk
+//https://stackoverflow.com/questions/62598952/exporting-in-game-data-to-csv-in-unity - don't think I used this
+
 public class ToCSV : MonoBehaviour
 {
     string filename = "";
@@ -24,7 +27,11 @@ public class ToCSV : MonoBehaviour
         timer.Start();
 
         TextWriter tw = new StreamWriter(filename, false);
-        tw.WriteLine(", NDI.pos.x, NDI.pos.y, NDI.pos.z,NDI.Eul.x, NDI.Eul.y, NDI.Eul.z, Seroma, Click");
+        tw.WriteLine("Time, NDI.Pos.x, NDI.Pos.y, NDI.Pos.z, NDI.Eul.x, NDI.Eul.y, NDI.Eul.z," +
+            "Panda.Pos.x, Panda.Pos.y, Panda.Pos.z, Panda.Eul.x, Panda.Eul.y, Panda.Eul.z," +
+            "Motoman.Pos.x, Motoman.Pos.y, Motoman.Pos.z, Motoman.Eul.x, Motoman.Eul.y, Motoman.Eul.z," +
+            "Seroma.x, Seroma.y, Seroma.z," +
+            "Click");
         tw.Close();
 
     }
@@ -39,19 +46,29 @@ public class ToCSV : MonoBehaviour
     {
         TextWriter tw = new StreamWriter(filename, true);
         NDISensor NDIsens = NDI.GetComponent<NDISensor>();
-        UnityEulerAngles = toUnityEulerAngles(NDIsens.EulerAngles);
 
-        //track mouse clicks for seed depositing - does not track hold
+        //Pretty sure this is wrong because not supposed to request EulerAngles from Unity as it does its own calculation
+        UnityEulerAngles = toUnityEulerAngles(NDIsens.EulerAngles);
+        //Convert Euler angles from 0-360 to -180-180
+        UnityEulerAngles.x = Mathf.Repeat(UnityEulerAngles.x + 180, 360) - 180;
+        UnityEulerAngles.y = Mathf.Repeat(UnityEulerAngles.y + 180, 360) - 180;
+        UnityEulerAngles.z = Mathf.Repeat(UnityEulerAngles.z + 180, 360) - 180;
+
+        //track mouse clicks for seed depositing - does not track if held down
         int Click = 0;
         if (Input.GetMouseButtonDown(0))
         {
             Click = 1; 
         }
 
-        tw.WriteLine(timer
+        //Read stopwatch
+        TimeSpan ts = timer.Elapsed;
+        print(ts);
+
+        tw.WriteLine(ts
         + "," + NDIsens.currentPosition.x / 100
-        + "," + NDIsens.currentPosition.y / 100
         + "," + NDIsens.currentPosition.z / 100
+        + "," + NDIsens.currentPosition.y / 100
         + "," + UnityEulerAngles.x
         + "," + UnityEulerAngles.y
         + "," + UnityEulerAngles.z
@@ -61,6 +78,15 @@ public class ToCSV : MonoBehaviour
         + "," + PandaRot.x
         + "," + PandaRot.y
         + "," + PandaRot.z
+        + "," + MotomanPos.x
+        + "," + MotomanPos.y
+        + "," + MotomanPos.z
+        + "," + MotomanRot.x
+        + "," + MotomanRot.y
+        + "," + MotomanRot.z
+        + "," + Seroma.transform.position.x / 100
+        + "," + Seroma.transform.position.y / 100
+        + "," + Seroma.transform.position.z / 100
         + "," + Click
 
         );
@@ -68,6 +94,7 @@ public class ToCSV : MonoBehaviour
         tw.Close();
     }
     private static Vector3 toUnityEulerAngles(Vector3 EulerAngles) {
+        //If you edit here, also edit NDISensor file
         Quaternion Qz = new Quaternion();
         Qz.eulerAngles = new Vector3(0, 0, EulerAngles.z * Mathf.Rad2Deg);
         Quaternion Qy = new Quaternion();
@@ -83,16 +110,24 @@ public class ToCSV : MonoBehaviour
     }
 
     Thread receiveThread;
+    Thread sendThread;
     UdpClient client;
+    UdpClient clientSend;
     public int port;
+    public int sendPort;
+    private string sendIP;
     private Vector3 PandaPos;
     private Vector3 PandaRot;
-
+    private Vector3 MotomanPos;
+    private Vector3 MotomanRot;
+    public GameObject Seroma;
 
     private void init()
     {
         // define port
         port = 35000;
+        sendPort = 1508;
+        sendIP = "10.1.38.190";
 
         // status
         print("Sending to 10.1.38.190: " + port);
@@ -102,8 +137,13 @@ public class ToCSV : MonoBehaviour
             new ThreadStart(ReceiveData));
         receiveThread.IsBackground = true;
         receiveThread.Start();
+
+        sendThread = new Thread(
+            new ThreadStart(SendData));
+        sendThread.IsBackground = true;
+        sendThread.Start();
     }
-    // receive thread
+    // Same as in NDISensor, to record NDI sensor Euler angles
     private void ReceiveData()
     {
         client = new UdpClient(port);
@@ -121,8 +161,32 @@ public class ToCSV : MonoBehaviour
                 {
                     ddata[i] = (float)BitConverter.ToDouble(data, i * 8);
                 }
-                PandaPos = new Vector3(ddata[0],ddata[1],ddata[2]);
+                PandaPos = new Vector3(ddata[0], ddata[1], ddata[2]);
                 PandaRot = new Vector3(ddata[3], ddata[4], ddata[5]);
+                MotomanPos = new Vector3(ddata[6], ddata[7], ddata[8]);
+                MotomanRot = new Vector3(ddata[9], ddata[10], ddata[11]);
+
+            }
+            catch (Exception err)
+            {
+                print(err.ToString());
+            }
+        }
+    }
+
+    //sending the y-axis rotation of the needle to rotate US probe
+    private void SendData()
+    {
+        clientSend = new UdpClient(sendPort);
+        while (true)
+        {
+            try
+            {
+                IPEndPoint pandaPC = new IPEndPoint(IPAddress.Parse(sendIP), sendPort);
+
+                byte[] sendData = BitConverter.GetBytes((double)UnityEulerAngles.y);
+
+                clientSend.Send(sendData, sendData.Length, pandaPC);
 
             }
             catch (Exception err)
@@ -132,4 +196,5 @@ public class ToCSV : MonoBehaviour
         }
     }
 }
+
 
