@@ -36,9 +36,18 @@ genPnts_cell = ContourInterpolation2d(contourCell, num_points, mean_pos_mat);
 
 %%
 genPnts = cell2mat(genPnts_cell);
-genPnts(:,1) = rescale(genPnts(:,1), -40,40);
-genPnts(:,2) = rescale(genPnts(:,2), -40,40);
-genPnts(:,3) = rescale(genPnts(:,3), -40,40);
+
+temp = genPnts(:,2);
+genPnts(:,2) = rescale(genPnts(:,1), 0.1, 166.2);
+genPnts(:,1) = rescale(temp, 0.1, 112.7);
+genPnts(:,3) = genPnts(:,3).*1000;
+mean_pos_mat = mean_pos_mat.*1000;
+% genPnts(:,3) = rescale(genPnts(:,3), 1 , (max(mean_pos_mat)-min(mean_pos_mat))*10);
+genPnts(:,3) = rescale(genPnts(:,3), 0 , 40);
+
+% genPnts(:,1) = rescale(genPnts(:,1), -40,40);
+% genPnts(:,2) = rescale(genPnts(:,2), -40,40);
+% genPnts(:,3) = rescale(genPnts(:,3), -40,40);
 
 P = [repelem(1, size(genPnts,1))' genPnts(:,1:3)];
 A = squareform(pdist(genPnts(:,1:3)));
@@ -52,13 +61,14 @@ Vals = [f; Zero_col];
 coeffs = Pnts\Vals;
 [lambda, c] = deal(coeffs(1:end-4), coeffs(end-3:end));
 
+%volume of points where rbf is evaluated to find surface
 testpntsx = min(genPnts(:,1)):1:max(genPnts(:,1)); %lowering number of testpnts could potentially be giving isosurface less area to get creative
 testpntsy = min(genPnts(:,2)):1:max(genPnts(:,2));
-testpntsz = min(genPnts(:,3)):1:max(genPnts(:,3));
+testpntsz = min(genPnts(:,3)):0.5:max(genPnts(:,3));
 
 [meshx, meshy, meshz] = meshgrid(testpntsx, testpntsy, testpntsz);
 
-surface = zeros(size(meshx(:),1),1);
+surf = zeros(size(meshx(:),1),1);
 
 for i = 1:size(meshx(:),1)
     summation = 0;
@@ -66,14 +76,19 @@ for i = 1:size(meshx(:),1)
         summation = summation + lambda(j)*norm([meshx(i), meshy(i), meshz(i)]-genPnts(j,1:3)); 
     end
     poly = c(1) + c(2)*meshx(i) + c(3)*meshy(i) + c(4)*meshz(i);
-    surface(i)=summation+poly;
+    surf(i)=summation+poly;
 end
-surface = reshape(surface,size(meshx));
+surf = reshape(surf,size(meshx));
 
-isosurface(meshx, meshy, meshz, surface, 0)
+% plots the (meshx, meshy, meshz) where surface is 0
+s = isosurface(meshx, meshy, meshz, surf, 0);
 
-%can use triangulation() with isosurface() [faces, verts] outputs, followed
+%%% Extracting surface %%%
+% - can use triangulation() with isosurface() [faces, verts] outputs, followed
 %by stlwrite() with triangulation output
+% - best results with obj_write function
+% >> obj_write(s, 'check')
+
 
 breakpoint = 0;
 % TESTING script
@@ -84,7 +99,8 @@ breakpoint = 0;
 % end
 % sum+poly
 
-%%
+%% Deprecated since onSurf/offSurf method
+
 % for interpolation endpoint error prevention
 contourCellInt = [contourCellInt(1,1); contourCellInt(1,1); contourCellInt; contourCellInt(end,1); contourCellInt(end,1)];
 figure
@@ -102,7 +118,7 @@ zValues = rescale(zValues, 0, zValuesRescale);
 zInt = linspace(min(zValues),max(zValues), contourLength); %points to interpolate at
 
 
-%% Shape Interpolation
+%% Shape Interpolation - deprecated since onSurf/offSurf method
 
 s_x = cell(num_points, 1);
 s_y = cell(num_points, 1);

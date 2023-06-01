@@ -35,7 +35,7 @@ for k = 1:size(contours,1)
     %Close the contour
     xinew = xi;
     yinew = yi; 
-    xinew(1) = xinew(end); %close data
+    xinew(1) = xinew(end); %close data %TODO could cat new point at beginning instead of rewriting existing
     yinew(1) = yinew(end);
     xinew = csape(d, xinew, 'periodic'); %TODO: periodic doesn't seem to do anything
     yinew = csape(d, yinew, 'periodic');
@@ -46,7 +46,6 @@ for k = 1:size(contours,1)
     interp_coords{k,1} = generatedPoints;
 
 end
-
 
 end
 
