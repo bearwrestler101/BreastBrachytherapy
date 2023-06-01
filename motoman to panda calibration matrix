@@ -6,6 +6,9 @@
 Push tables together for this to work
 Note: Converts between EE of panda and motoman (no US probe attached - to get matrices accounting for US probe: tf = motoman\panda and multiply its transpose by [1 0 0 0; 0 1 0 0; 0 0 1 0.2337; 0 0 0 1]. Use its inverse for the panda\motoman matrix)
 
+[1 0 0 0.08352; 0 1 0 0.0108; 0 0 1 -0.03; 0 0 0 1] - motoman frame 
+[1 0 0 0.108; 0 1 0 -0.8352; 0 0 1 -0.03; 0 0 0 1] - panda frame
+
 >> transform = motoman\panda
 
 transform =
