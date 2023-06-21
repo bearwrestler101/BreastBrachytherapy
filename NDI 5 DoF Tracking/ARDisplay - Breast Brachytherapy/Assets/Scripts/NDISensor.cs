@@ -4,6 +4,8 @@
     UDP-Receive (send to)
     -----------------------
     // [url]http://msdn.microsoft.com/de-de/library/bb979228.aspx#ID0E3BAC[/url]
+
+    // https://forum.unity.com/threads/simple-udp-implementation-send-read-via-mono-c.15900/
    
    
     // > receive
@@ -116,8 +118,9 @@ public class NDISensor : MonoBehaviour
                 //data comes in as quaternion, convert to euler angles, create matrices with euler angles, convert back to quaternion
                 localRotation.Set(ddata[4], ddata[5], ddata[6], ddata[3]);
                 EulerAngles = ToEulerAngles(localRotation);
-                
+
                 // Assignment has something to do with Unity using ZXY rotations
+                //If you edit here, also edit ToCSV file
                 Quaternion Qz = new Quaternion();
                 Qz.eulerAngles = new Vector3(0, 0, EulerAngles.z * Mathf.Rad2Deg);
                 Quaternion Qy = new Quaternion();
@@ -131,6 +134,7 @@ public class NDISensor : MonoBehaviour
                 Matrix4x4 tForm = Rz * Ry * Rx;
 
                 localRotation.eulerAngles = tForm.rotation.eulerAngles;
+                print(tForm.rotation.eulerAngles);
 
                 // add tool status, error code -> change object color, add info to log
             }
@@ -172,11 +176,15 @@ public class NDISensor : MonoBehaviour
 
     private static Vector3 ToPandaBase(Vector3 pos)
     {
-        double[,] transform = new double[4, 4] { 
-            { -0.0296, -0.0328, -0.9851, 0.0 }, 
-            { -0.9900, 0.0222, -0.0109, 0.0 }, 
-            { 0.0532, 1.0244, 0.0039, 0.0 }, 
-            { 0.3571, 0.2429, 0.2638, 1.0 } };
+        double[,] transform = new double[4, 4] {
+            //{ 0.0157, -0.0208, -0.9820, 0.0 }, 
+            //{ 1.0071, 0.0053, 0.0197, 0.0 }, 
+            //{ 0.0034, -1.0071, 0.0285, 0.0 }, 
+            //{ 0.4598, -0.2811, 0.0175, 1.0 } };
+            {0.1742, 0.9918, 0.5463, 0.0 },
+            {0.8595, -0.7297, -0.0298, 0.0 },
+            {-0.1544, -0.9591, -0.0756, 0.0 },
+            {0.3959, -0.3642, 0.3008, 1.0 } };
         double[,] PosNeedleBase = new double[1, 4] { { pos.x, pos.y, pos.z, 1 } };
         double[,] PosPandaBase = MultiplyMatrix(PosNeedleBase, transform);
         Vector3 InPandaBase = new Vector3((float)PosPandaBase[0, 0], (float)PosPandaBase[0, 1], (float)PosPandaBase[0, 2]);
