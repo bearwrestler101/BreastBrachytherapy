@@ -17,6 +17,8 @@ public class ToCSV : MonoBehaviour
     public GameObject NDI;
     private Vector3 UnityEulerAngles = new Vector3(0, 0, 0);
     private Stopwatch timer;
+    private float logInterval = 0.01f; // Delay between log entries in seconds
+    private float timeSinceLastLog = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +33,7 @@ public class ToCSV : MonoBehaviour
             "Panda.Pos.x, Panda.Pos.y, Panda.Pos.z, Panda.Eul.x, Panda.Eul.y, Panda.Eul.z," +
             "Motoman.Pos.x, Motoman.Pos.y, Motoman.Pos.z, Motoman.Eul.x, Motoman.Eul.y, Motoman.Eul.z," +
             "Seroma.x, Seroma.y, Seroma.z," +
-            "Click");
+            "Click," + "US-A," + "US-A_R-S," + "US-S_R-A," + "Needle.Grid.Pos," + "Ultrasound Start Record");
         tw.Close();
 
     }
@@ -39,7 +41,13 @@ public class ToCSV : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        WriteCSV();
+        timeSinceLastLog += Time.deltaTime;
+
+        if (timeSinceLastLog >= logInterval)
+        {
+            timeSinceLastLog = 0f;
+            WriteCSV();
+        }
     }
 
     public void WriteCSV()
@@ -58,12 +66,15 @@ public class ToCSV : MonoBehaviour
         int Click = 0;
         if (Input.GetMouseButtonDown(0))
         {
-            Click = 1; 
+            Click = 1;
+        }
+
+        if (UltrasoundStart != 1) { 
+            UltrasoundStart = 0;
         }
 
         //Read stopwatch
         TimeSpan ts = timer.Elapsed;
-        print(ts);
 
         tw.WriteLine(ts
         + "," + NDIsens.currentPosition.x / 100
@@ -88,6 +99,12 @@ public class ToCSV : MonoBehaviour
         + "," + Seroma.transform.position.y / 100
         + "," + Seroma.transform.position.z / 100
         + "," + Click
+        + "," + Click
+        + "," + "a"
+        + "," + "a"
+        + "," + "a"
+        + "," + UltrasoundStart
+
 
         );
         Click = 0;
@@ -110,17 +127,22 @@ public class ToCSV : MonoBehaviour
     }
 
     Thread receiveThread;
+    Thread receiveThread_2;
     Thread sendThread;
+    
     UdpClient client;
     UdpClient clientSend;
+    UdpClient client_US_start;
     public int port;
     public int sendPort;
+    public int port2; 
     private string sendIP;
     private Vector3 PandaPos;
     private Vector3 PandaRot;
     private Vector3 MotomanPos;
     private Vector3 MotomanRot;
     public GameObject Seroma;
+    public int UltrasoundStart;
 
     private void init()
     {
@@ -128,6 +150,8 @@ public class ToCSV : MonoBehaviour
         port = 35000;
         sendPort = 1508;
         sendIP = "10.1.38.190";
+
+        port2 = 25012;
 
         // status
         print("Sending to 10.1.38.190: " + port);
@@ -137,6 +161,11 @@ public class ToCSV : MonoBehaviour
             new ThreadStart(ReceiveData));
         receiveThread.IsBackground = true;
         receiveThread.Start();
+
+        receiveThread_2 = new Thread(
+    new ThreadStart(ReceiveData2));
+        receiveThread_2.IsBackground = true;
+        receiveThread_2.Start();
 
         sendThread = new Thread(
             new ThreadStart(SendData));
@@ -173,6 +202,40 @@ public class ToCSV : MonoBehaviour
             }
         }
     }
+
+    //To determine when recording has started
+    private void ReceiveData2()
+    {
+        client_US_start = new UdpClient(port2);
+        while (true)
+        {
+            try
+            {
+                // Bytes empfangen.
+                IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, port2);
+                byte[] data2 = client_US_start.Receive(ref anyIP);
+
+                float[] ddata2 = new float[data2.Length / 8];
+
+                ddata2[0] = (float)BitConverter.ToDouble(data2, 0);
+                
+                if (ddata2.Length > 0)
+                {
+                    UltrasoundStart = (int)ddata2[0]; 
+                }
+                print(UltrasoundStart);
+
+                
+
+            }
+            catch (Exception err)
+            {
+                print(err.ToString());
+            }
+        }
+    }
+
+
 
     //sending the y-axis rotation of the needle to rotate US probe
     private void SendData()

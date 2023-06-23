@@ -41,7 +41,7 @@ public class CameraMovement_axial : MonoBehaviour
     {
         //  transform.position = new Vector3(NDI.position.x, NDI.position.y, NDI.position.z + 10.0f);
         Quaternion q = transform.rotation;
-        q.eulerAngles = new Vector3(0, NDI.eulerAngles.y, 0);
+        q.eulerAngles = new Vector3(0, (NDI.eulerAngles.y+180), 0);
         transform.rotation = q; 
     }
 }

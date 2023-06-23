@@ -58,6 +58,7 @@
      <Compile Include="Assets\Scripts\BoneDisplay.cs" />
      <Compile Include="Assets\Scripts\CameraDebug.cs" />
      <Compile Include="Assets\Scripts\CameraMovement_axial.cs" />
+     <Compile Include="Assets\Scripts\CameraMovement_egg.cs" />
      <Compile Include="Assets\Scripts\CameraMovement_sag.cs" />
      <Compile Include="Assets\Scripts\CameraObliqueProjection.cs" />
      <Compile Include="Assets\Scripts\ControllerInput.cs" />

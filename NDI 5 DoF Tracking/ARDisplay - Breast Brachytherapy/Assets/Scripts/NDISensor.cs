@@ -112,6 +112,7 @@ public class NDISensor : MonoBehaviour
                 //print(">>\n" + ddata[0] + "\n" + ddata[1] + "\n" + ddata[2] + "\n" + ddata[3] + "\n" + ddata[4] + "\n" + ddata[5] + "\n" + ddata[6]);
                 localPosition = new Vector3(0.001f*ddata[0], 0.001f*ddata[1], 0.001f*ddata[2]);
                 localPosition = ToPandaBase(localPosition);
+                
                 //print("Local position: " + localPosition.x + "\n" + localPosition.y + "\n" + localPosition.z);
                 localPosition = new Vector3(100.0f * localPosition.x, 100.0f * localPosition.z, 100.0f * localPosition.y);
 
@@ -124,7 +125,7 @@ public class NDISensor : MonoBehaviour
                 Quaternion Qz = new Quaternion();
                 Qz.eulerAngles = new Vector3(0, 0, EulerAngles.z * Mathf.Rad2Deg);
                 Quaternion Qy = new Quaternion();
-                Qy.eulerAngles = new Vector3(0, EulerAngles.x * Mathf.Rad2Deg, 0);
+                Qy.eulerAngles = new Vector3(0, (EulerAngles.x+Mathf.PI) * Mathf.Rad2Deg, 0);
                 Quaternion Qx = new Quaternion();
                 Qx.eulerAngles = new Vector3(EulerAngles.y * Mathf.Rad2Deg, 0, 0);
 
@@ -176,15 +177,28 @@ public class NDISensor : MonoBehaviour
 
     private static Vector3 ToPandaBase(Vector3 pos)
     {
-        double[,] transform = new double[4, 4] {
-            //{ 0.0157, -0.0208, -0.9820, 0.0 }, 
-            //{ 1.0071, 0.0053, 0.0197, 0.0 }, 
-            //{ 0.0034, -1.0071, 0.0285, 0.0 }, 
-            //{ 0.4598, -0.2811, 0.0175, 1.0 } };
-            {0.1742, 0.9918, 0.5463, 0.0 },
-            {0.8595, -0.7297, -0.0298, 0.0 },
-            {-0.1544, -0.9591, -0.0756, 0.0 },
-            {0.3959, -0.3642, 0.3008, 1.0 } };
+        double[,] transform = new double[4, 4]{
+            { 0.0229,   -0.0241,   -1.0002,   -0.0000 },
+            { 1.0080,   -0.0007,    0.0122,   -0.0000 },
+            { 0.0000,   -1.0096,    0.0377,   -0.0000 },
+            { 0.4620,   -0.2904,    0.0006,    1.0000 } };
+
+        //{ 0.0229,   -0.0241,   -1.0002,   -0.0000 },
+        //    { 1.0080,   -0.0007,    0.0122,   -0.0000 },
+        //    { 0.0000,   -1.0096,    0.0377,   -0.0000 },
+        //    { 0.4620,   -0.2863,    0.0003,    1.0000 }
+
+        //{ 0.0081, -0.0095, -0.9939, 0.0 },
+        //{ 1.0163, 0.0165, 0.0273, 0.0 },
+        //{ 0.1001, -0.9540, 0.1096, 0.0 },
+        //{ 0.4682, -0.2714, 0.0211, 1.0 } };
+
+        //double[,] transform = new double[4, 4] {
+        //    { 0.0157, -0.0208, -0.9820, 0.0 },
+        //    { 1.0071, 0.0053, 0.0197, 0.0 },
+        //    { 0.0034, -1.0071, 0.0285, 0.0 },
+        //    { 0.4598, -0.2811, 0.0175, 1.0 } };
+
         double[,] PosNeedleBase = new double[1, 4] { { pos.x, pos.y, pos.z, 1 } };
         double[,] PosPandaBase = MultiplyMatrix(PosNeedleBase, transform);
         Vector3 InPandaBase = new Vector3((float)PosPandaBase[0, 0], (float)PosPandaBase[0, 1], (float)PosPandaBase[0, 2]);
