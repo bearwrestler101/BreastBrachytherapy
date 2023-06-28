@@ -1,4 +1,4 @@
-clc; clearvars -except out;
+% clc; clearvars -except out;
 
 %when scanning, make sure probe is oriented correctly
 
@@ -13,23 +13,26 @@ clc; clearvars -except out;
 % should be able to remove when scanning procedure is good - likely can be
 % fixed by delaying shutter output from panda PC to US PC
 
-iLog = zeros(size(index_cell,1),1);
-for i = 2:size(pos_cell,1)
-    if round(pos_cell{i-1}(1,1),3) == round(pos_cell{i}(1,1),3)
-        iLog(i,1) = i;
-    end
-end
-iLog = iLog(all(iLog, 2));
-for i = 1:size(iLog,1)
-    index_cell(iLog(i,1),1) = 0;
-    pos_cell{iLog(i,1),1} = [];
-    image_cell{iLog(i,1),1} = [];
-end
-
-% remove empties
-index_cell = index_cell(all(index_cell, 2));
-pos_cell = pos_cell(~cellfun('isempty',pos_cell));
-image_cell = image_cell(~cellfun('isempty',image_cell));
+% iLog = zeros(size(index_cell,1),1);
+% for i = 2:size(pos_cell,1)
+%     if i == 51
+%         continue
+%     end
+%     if round(pos_cell{i-1}(2,1),3) == round(pos_cell{i}(2,1),3)
+%         iLog(i,1) = i;
+%     end
+% end
+% iLog = iLog(all(iLog, 2));
+% for i = 1:size(iLog,1)
+%     index_cell(iLog(i,1),1) = 0;
+%     pos_cell{iLog(i,1),1} = [];
+%     image_cell{iLog(i,1),1} = [];
+% end
+% 
+% % remove empties
+% index_cell = index_cell(all(index_cell, 2));
+% pos_cell = pos_cell(~cellfun('isempty',pos_cell));
+% image_cell = image_cell(~cellfun('isempty',image_cell));
 
 % returns a matrix of indices reorganized to fit scanning path
 stitch_indices = ImagesForStitch(index_cell, pos_cell);
@@ -60,19 +63,44 @@ end
 %function line for activecontour() is commented out
 
 %%
-cd simpler_tests/img_prep_for_dl_segmentation
+cd Segmentation
 run("prediction_verification")
-cd ../..
+cd ../
 %%
 contourCell = cell(size(predImg,1),1);
 for i = 1:size(predImg,1)
     contour_temp = bwboundaries(predImg{i});
     contourCell{i} = contour_temp{1,1};
 end
+
+%%
+% Some temporary code for processing the predictions
+
+pos_cell  = mat2cell(pandapos_2, 3, repmat(1,1,19));
+pos_cell = pos_cell';
+pandapos_2= pandapos_2';
+
+%Determine x and y ranges of seroma to scale interpolationt to correct size
+numPred = length(predImg);
+fullSize = cell(numPred,2);
+maxAndmin = zeros(numPred,4);
+for i = 1:numPred
+    %resize predictions to original size
+fullSize{i,1} = imresize(predImg{i},[size(dry_run_2{1})]);
+fullSize{i,2} = bwboundaries(fullSize{i,1});
+%get range of x and y values
+maxAndmin(i,1:4) = [max(fullSize{i,2}{1,1}) min(fullSize{i,2}{1,1})];
+%difference in x: 5, difference in y: 6
+maxAndmin(i,5:6) = [maxAndmin(i,2)-maxAndmin(i,4) maxAndmin(i,1)-maxAndmin(i,3)];
+end
+max(maxAndmin(:,5:6)) %use obtain US calibration to determine real size
+
 %%
 % 2D contour and 3D shape interpolation
-% [triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell, pos_cell(stitch_indices));
-[surface] = ShapeInterpolation(contourCell, pos_cell, pos_cell(stitch_indices));
+% [triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell, pos_cell(stitch_indices)); not used
+% [surface] = ShapeInterpolation(contourCell, pos_cell, pos_cell(stitch_indices));
+[surface] = ShapeInterpolation(contourCell, pos_cell, pandapos_2(:,2));
+
 
 %%
 figure

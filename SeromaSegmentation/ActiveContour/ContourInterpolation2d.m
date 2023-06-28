@@ -41,7 +41,7 @@ for k = 1:size(contours,1)
     yinew = csape(d, yinew, 'periodic');
     xinew = ppval(xinew, dSi); %evaluate at equidistant points
     yinew = ppval(yinew, dSi);
-    generatedPoints = normals(xinew, yinew); %find normals of contours and off-surface data
+    generatedPoints = normals_better(xinew, yinew); %find normals of contours and off-surface data
     generatedPoints = [generatedPoints(:,1:2) repelem(mean_pos_mat(k),size(generatedPoints,1))', generatedPoints(:,3)]; %insert z-values
     interp_coords{k,1} = generatedPoints;
 

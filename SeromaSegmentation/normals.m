@@ -75,8 +75,8 @@ for numRepeat = 1:15
                 [~, I] = min(V(setdiff(1:end, numPnts+i)));
                 inc = inc + 0.1;
             end
-            offSurf(i,1:2) = offSurf_adjust;
-            offSurf(i,3) =  norm(offSurf(i,1:2)-onSurf(i,1:2));
+            offSurf(i,1:2) = offSurf_adjust; %x,y coordinates
+            offSurf(i,3) =  norm(offSurf(i,1:2)-onSurf(i,1:2)); %distance to surface
             generatedPoints = [onSurf; offSurf];
 
         elseif I ~=i-numPnts && i > 100

@@ -27,10 +27,10 @@ for i = 1:size(index_cell, 1)
     pos_cell{i} = out.pandapos.signals.values(:,:,index_cell(i));
 end
 
-% Plot locations at which images and positiions were taken
-% figure
-% hold on
-% for i = 1:size(index_cell,1)
-%     plot(pos_cell{i}(2,1,:), pos_cell{i}(1,1,:), '.') 
-% end
+% Plot locations at which images and positions were taken
+figure
+hold on
+for i = 1:size(index_cell,1)
+    plot(pos_cell{i}(2,1,:), pos_cell{i}(1,1,:), '.') 
+end
 end
