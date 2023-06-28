@@ -1,2 +1,9 @@
-SeromaSegmentation/simpler_tests/img_prep_for_dl_segmentation/snp_augmented_dataset
+SeromaSegmentation/Segmentation/snp_augmented_dataset/
+SeromaSegmentation/Segmentation/BUS_dataset/
+SeromaSegmentation/Segmentation/BUS_dataset_augmented/
+SeromaSegmentation/Segmentation/our_dataset_augmented/
+SeromaSegmentation/Segmentation/dataset
 SeromaSegmentation/beef_silica_all.mat
+SeromaSegmentation/Segmentation/ROI/
+SeromaSegmentation/Segmentation/ROI_Mask/
+SeromaSegmentation/Segmentation/ROI_Mask_Good/
