@@ -29,11 +29,11 @@ switch checkType
             
             bboxOverlap(i) = bboxOverlapRatio(Preddies{3,i}, meanBox);
             
-            if bboxOverlap(i)<0.3
-                forbidden_list = [forbidden_list i];
-                disp("Boxes don't overlap:")
-                disp(i)
-            end
+%             if bboxOverlap(i)<0.3
+%                 forbidden_list = [forbidden_list i];
+%                 disp("Boxes don't overlap:")
+%                 disp(i)
+%             end
             
         end
         
@@ -84,6 +84,7 @@ switch checkType
                         (tempRP{5}>meanSol+stdSol || tempRP{5}<meanSol-stdSol) &&...
                         (tempRP{6}>meanExt+stdExt || tempRP{6}<meanExt-stdExt)
                     disp('Did not work')
+                    disp(i)
                     forbidden_list = [forbidden_list i];
                 else
                     predImg{i} = img;

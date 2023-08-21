@@ -10,11 +10,12 @@ mask_names = natsortfiles(dir("ROI_Mask/*.png"));
 masks = cell(size(mask_names,1),1);
 
 
-frh_names = natsortfiles(dir("ROI_Mask_Good/*.png"));
+frh_names = natsortfiles(dir("ROI_Mask_Good/*.png")); %path needs updating
 frh_masks = cell(size(frh_names,1),1);
+%%%have to be loaded in before running script%%%
 frh = [FRH100M_F1_D45_G85_good; FRH100M_F1_D45_G90_good; FRH60M_F1_D45_G80_good];
 
-
+%%%have to be loaded in before running script%%%
 imgs = [cell1'; cell2'; cell3'; cell4'; cell5'; cell6'; frh];
 
 for i=1:length(masks)

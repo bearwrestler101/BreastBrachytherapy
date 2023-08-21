@@ -76,9 +76,12 @@ end
 %%
 % Some temporary code for processing the predictions
 
-pos_cell  = mat2cell(pandapos_2, 3, repmat(1,1,19));
+pandapos = pandapos_new;
+dry_run = dry_run;
+
+pos_cell  = mat2cell(pandapos, 3, repmat(1,1,20));
 pos_cell = pos_cell';
-pandapos_2= pandapos_2';
+pandapos= pandapos';
 
 %Determine x and y ranges of seroma to scale interpolationt to correct size
 numPred = length(predImg);
@@ -86,27 +89,29 @@ fullSize = cell(numPred,2);
 maxAndmin = zeros(numPred,4);
 for i = 1:numPred
     %resize predictions to original size
-fullSize{i,1} = imresize(predImg{i},[size(dry_run_2{1})]);
+fullSize{i,1} = imresize(predImg{i},[size(dry_run{1})]);
 fullSize{i,2} = bwboundaries(fullSize{i,1});
 %get range of x and y values
 maxAndmin(i,1:4) = [max(fullSize{i,2}{1,1}) min(fullSize{i,2}{1,1})];
 %difference in x: 5, difference in y: 6
 maxAndmin(i,5:6) = [maxAndmin(i,2)-maxAndmin(i,4) maxAndmin(i,1)-maxAndmin(i,3)];
 end
-max(maxAndmin(:,5:6)) %use obtain US calibration to determine real size
+max(maxAndmin(:,5:6)) %use to obtain US calibration to determine real size
 
 %%
 % 2D contour and 3D shape interpolation
 % [triangles, surfaceCoords] = ShapeInterpolation(contourCell, pos_cell, pos_cell(stitch_indices)); not used
 % [surface] = ShapeInterpolation(contourCell, pos_cell, pos_cell(stitch_indices));
-[surface] = ShapeInterpolation(contourCell, pos_cell, pandapos_2(:,2));
+[surface] = ShapeInterpolation(contourCell, pos_cell, pandapos(:,2));
 
+%Insert breakpoint at breakpoint line in ShapeInterpolation
+%when finished running: obj_write(s, "name"), function located in Libs
 
 %%
-figure
-hold on
-fv = trimesh(triangles, surfaceCoords(:,3), surfaceCoords(:,1), surfaceCoords(:,2));
-
-stlwrite('seroma.stl', fv.Faces, fv.Vertices);
+% figure
+% hold on
+% fv = trimesh(triangles, surfaceCoords(:,3), surfaceCoords(:,1), surfaceCoords(:,2));
+% 
+% stlwrite('seroma.stl', fv.Faces, fv.Vertices);
 
 

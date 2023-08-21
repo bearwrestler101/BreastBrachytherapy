@@ -60,7 +60,7 @@ end
 
 [forbidden_list, predImg] = evaluate_std(allPreds, forbidden_list, predImg, maxObj, 'BoxOverlap');
 
-[forbidden_list, predImg] = evaluate_std(allPreds, forbidden_list, predImg, maxObj, 'Other');
+% [forbidden_list, predImg] = evaluate_std(allPreds, forbidden_list, predImg, maxObj, 'Other');
 [~, allPreds] = create_allPreds(predImg);
 forbidden_list = sort(unique(forbidden_list));
 
