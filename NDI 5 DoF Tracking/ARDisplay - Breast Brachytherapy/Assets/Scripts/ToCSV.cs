@@ -15,6 +15,7 @@ public class ToCSV : MonoBehaviour
 {
     string filename = "";
     public GameObject NDI;
+    public GameObject pathLength;
     private Vector3 UnityEulerAngles = new Vector3(0, 0, 0);
     private Stopwatch timer;
     private float logInterval = 0.01f; // Delay between log entries in seconds
@@ -29,11 +30,12 @@ public class ToCSV : MonoBehaviour
         timer.Start();
 
         TextWriter tw = new StreamWriter(filename, false);
-        tw.WriteLine("Time, NDI.Pos.x, NDI.Pos.y, NDI.Pos.z, NDI.Eul.x, NDI.Eul.y, NDI.Eul.z," +
+        tw.WriteLine("Time, " +
+            "NDI.Pos.x, NDI.Pos.y, NDI.Pos.z, NDI.Eul.x, NDI.Eul.y, NDI.Eul.z," +
             "Panda.Pos.x, Panda.Pos.y, Panda.Pos.z, Panda.Eul.x, Panda.Eul.y, Panda.Eul.z," +
             "Motoman.Pos.x, Motoman.Pos.y, Motoman.Pos.z, Motoman.Eul.x, Motoman.Eul.y, Motoman.Eul.z," +
             "Seroma.x, Seroma.y, Seroma.z," +
-            "Click," + "US-A," + "US-A_R-S," + "US-S_R-A," + "Needle.Grid.Pos," + "Ultrasound Start Record");
+            "Click," + "Mode," + "Needle.Grid.Pos," + "Distance," + "Ultrasound Start Record");
         tw.Close();
 
     }
@@ -54,6 +56,8 @@ public class ToCSV : MonoBehaviour
     {
         TextWriter tw = new StreamWriter(filename, true);
         NDISensor NDIsens = NDI.GetComponent<NDISensor>();
+        PathLengthPts path = pathLength.GetComponent<PathLengthPts>();
+        float dist = path.distance;
 
         //Pretty sure this is wrong because not supposed to request EulerAngles from Unity as it does its own calculation
         UnityEulerAngles = toUnityEulerAngles(NDIsens.EulerAngles);
@@ -99,10 +103,14 @@ public class ToCSV : MonoBehaviour
         + "," + Seroma.transform.position.y / 100
         + "," + Seroma.transform.position.z / 100
         + "," + Click
-        + "," + Click
+        + "," + 2
+        //Modes: 
+        //1 - US-A 
+        //2 - US-S 
+        //3 - US-A_R-S 
+        //4 - US-S_R-A
         + "," + "a"
-        + "," + "a"
-        + "," + "a"
+        + "," + dist
         + "," + UltrasoundStart
 
 

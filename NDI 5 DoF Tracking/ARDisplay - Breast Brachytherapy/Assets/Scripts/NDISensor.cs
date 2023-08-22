@@ -135,7 +135,7 @@ public class NDISensor : MonoBehaviour
                 Matrix4x4 tForm = Rz * Ry * Rx;
 
                 localRotation.eulerAngles = tForm.rotation.eulerAngles;
-                print(tForm.rotation.eulerAngles);
+                //print(tForm.rotation.eulerAngles);
 
                 // add tool status, error code -> change object color, add info to log
             }
@@ -181,23 +181,7 @@ public class NDISensor : MonoBehaviour
             { 0.0229,   -0.0241,   -1.0002,   -0.0000 },
             { 1.0080,   -0.0007,    0.0122,   -0.0000 },
             { 0.0000,   -1.0096,    0.0377,   -0.0000 },
-            { 0.4620,   -0.2904,    0.0006,    1.0000 } };
-
-        //{ 0.0229,   -0.0241,   -1.0002,   -0.0000 },
-        //    { 1.0080,   -0.0007,    0.0122,   -0.0000 },
-        //    { 0.0000,   -1.0096,    0.0377,   -0.0000 },
-        //    { 0.4620,   -0.2863,    0.0003,    1.0000 }
-
-        //{ 0.0081, -0.0095, -0.9939, 0.0 },
-        //{ 1.0163, 0.0165, 0.0273, 0.0 },
-        //{ 0.1001, -0.9540, 0.1096, 0.0 },
-        //{ 0.4682, -0.2714, 0.0211, 1.0 } };
-
-        //double[,] transform = new double[4, 4] {
-        //    { 0.0157, -0.0208, -0.9820, 0.0 },
-        //    { 1.0071, 0.0053, 0.0197, 0.0 },
-        //    { 0.0034, -1.0071, 0.0285, 0.0 },
-        //    { 0.4598, -0.2811, 0.0175, 1.0 } };
+            { 0.4620,   -0.2864,    0.0006,    1.0000} };
 
         double[,] PosNeedleBase = new double[1, 4] { { pos.x, pos.y, pos.z, 1 } };
         double[,] PosPandaBase = MultiplyMatrix(PosNeedleBase, transform);

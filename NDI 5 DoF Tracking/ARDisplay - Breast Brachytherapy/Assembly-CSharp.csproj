@@ -65,6 +65,7 @@
      <Compile Include="Assets\Scripts\Flip.cs" />
      <Compile Include="Assets\Scripts\HapticPlaneDisplay.cs" />
      <Compile Include="Assets\Scripts\NDISensor.cs" />
+     <Compile Include="Assets\Scripts\PathLengthPts.cs" />
      <Compile Include="Assets\Scripts\RobotComm.cs" />
      <Compile Include="Assets\Scripts\RobotGetPosition.cs" />
      <Compile Include="Assets\Scripts\TargetSpawn.cs" />
@@ -75,8 +76,14 @@
  <Reference Include="Unity.VSCode.Editor">
  <HintPath>C:/Users/David/Desktop/Kirill/BreastBrachytherapy/NDI 5 DoF Tracking/ARDisplay - Breast Brachytherapy/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
  </Reference>
+ <Reference Include="Unity.Recorder.Editor">
+ <HintPath>C:/Users/David/Desktop/Kirill/BreastBrachytherapy/NDI 5 DoF Tracking/ARDisplay - Breast Brachytherapy/Library/ScriptAssemblies/Unity.Recorder.Editor.dll</HintPath>
+ </Reference>
  <Reference Include="Unity.TextMeshPro.Editor">
  <HintPath>C:/Users/David/Desktop/Kirill/BreastBrachytherapy/NDI 5 DoF Tracking/ARDisplay - Breast Brachytherapy/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Recorder">
+ <HintPath>C:/Users/David/Desktop/Kirill/BreastBrachytherapy/NDI 5 DoF Tracking/ARDisplay - Breast Brachytherapy/Library/ScriptAssemblies/Unity.Recorder.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Users/David/Desktop/Kirill/BreastBrachytherapy/NDI 5 DoF Tracking/ARDisplay - Breast Brachytherapy/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
@@ -89,6 +96,9 @@
  </Reference>
  <Reference Include="Unity.Rider.Editor">
  <HintPath>C:/Users/David/Desktop/Kirill/BreastBrachytherapy/NDI 5 DoF Tracking/ARDisplay - Breast Brachytherapy/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Recorder.Base">
+ <HintPath>C:/Users/David/Desktop/Kirill/BreastBrachytherapy/NDI 5 DoF Tracking/ARDisplay - Breast Brachytherapy/Library/ScriptAssemblies/Unity.Recorder.Base.dll</HintPath>
  </Reference>
  <Reference Include="Unity.TextMeshPro">
  <HintPath>C:/Users/David/Desktop/Kirill/BreastBrachytherapy/NDI 5 DoF Tracking/ARDisplay - Breast Brachytherapy/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
